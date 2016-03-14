@@ -12,21 +12,12 @@ BugReports: https://github.com/epiviz/epivizrData/issues
 Depends:
     R (>= 3.2.3),
     methods,
-    Biobase,
     epivizrServer,
-    SummarizedExperiment (>= 0.2.0),
-    rtracklayer
-Imports:
-    S4Vectors,
-    OrganismDbi,
-    GenomeInfoDb,
-    GenomicRanges,
-    GenomicFeatures
 Suggests:
     testthat,
     roxygen2,
-    knitr,
-    knitrBootstrap
 License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 5.0.1
+Collate:
+  'EpivizDataMgr-class.R'

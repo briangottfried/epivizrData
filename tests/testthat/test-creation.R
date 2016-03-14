@@ -6,11 +6,21 @@ test_that("new creates a proper object", {
   expect_is(mgr, "EpivizDataMgr")
   
   expect_is(mgr$.ms_list, "list")
-  expect_equal(length(mgr$.msList), 0)
+  expect_equal(length(mgr$.ms_list), 0)
   
   expect_equal(mgr$.ms_idCounter, 0)
   
   expect_is(mgr$.server, "EpivizServer")
-  expect_true(mgr$is_closed())
+  expect_true(mgr$is_server_closed())
 })
 
+test_that("server opening works as expected", {
+  server <- epivizrServer::createServer()
+  mgr <- EpivizDataMgr$new(server=server)
+  expect_true(mgr$is_server_closed())
+  
+  server$start_server()
+  on.exit(server$stop_server())
+  
+  expect_false(mgr$is_server_closed())
+})

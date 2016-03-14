@@ -1,4 +1,4 @@
 library(testthat)
-library(epivizrServer)
+library(epivizrData)
 
-test_check("epivizrServer")
+test_check("epivizrData")
