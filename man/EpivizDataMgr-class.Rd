@@ -8,11 +8,20 @@
 \description{
 Class providing data manager for epiviz app
 }
+\details{
+The 'register_type' method is used to register data types to be handled by the
+manager. Usage is as follows:
+\code{register_type(type_name, type_descriptor)}: with \code{type_name} a character
+string specifying the type name and \code{type_descriptor} a list with slots
+\code{class} specifying with \code{EpivizData} subclass it corresponds to,
+\code{description} describing the data type and 
+\code{input_class} specifying which object type is taken as input
+}
 \section{Methods}{
 
 \describe{
 \item{\code{is_server_closed()}}{Check if underlying server is closed, <logical>}
 
-\item{\code{register_type(type_name, type_description)}}{Register a data type to the manager, type_name<character>, type_description<character>}
+\item{\code{register_type(type_name, type_description)}}{Register a data type to the manager (See Details)}
 }}
 
