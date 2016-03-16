@@ -33,11 +33,46 @@ test_that("register works for bp data", {
 })
 
 test_that("register works for gene info granges", {
-  gr <- makeGeneInfo()
+  gr <- make_test_gene_info()
   ms_obj <- epivizrData::register(gr, type="gene_info")
   expect_true(validObject(ms_obj))
   
   expect_is(ms_obj, "EpivizGeneInfoData")
   expect_is(ms_obj$.object, "GNCList")
   expect_true(is.null(ms_obj$.columns))
+})
+
+test_that("register works for RangedSummarizedExperiment", {
+  sset <- make_test_SE()
+  ms_obj <- epivizrData::register(sset, columns=c("A","B"), assay="counts2")
+  expect_true(validObject(ms_obj))
+  
+  order <- order(start(rowRanges(sset)))
+  sset <- sset[order,]
+  
+  expect_is(ms_obj, "EpivizFeatureData")
+  expect_is(ms_obj$.object, "RangedSummarizedExperiment")
+  
+  gr <- as(rowRanges(ms_obj$.object), "GRanges")
+  mcols(gr) <- mcols(rowRanges(ms_obj$.object))
+  
+  expect_false(is.null(gr$probeid))
+  
+  tmp <- rowRanges(sset)
+  strand(tmp) <- "*"
+  o <- order(tmp)
+  
+  expect_identical(gr, rowRanges(sset)[o,])
+  
+  #  expect_identical(assays(dev$object), assays(sset)[o,])
+  expect_identical(colData(ms_obj$.object), colData(sset))
+  
+  columns <- c("A","B")
+  expect_identical(ms_obj$.columns, columns)
+  emat <- assay(sset,"counts2")[,c("A","B")]
+  mat <- assay(ms_obj$.object,"counts2")[,c("A","B")]
+  expect_equal(emat[o,], mat)
+  
+  rngs <- apply(emat, 2, function(x) range(pretty(range(x))))
+  expect_equal(ms_obj$.ylim, rngs, check.attributes=FALSE)
 })

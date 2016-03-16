@@ -42,20 +42,20 @@ setMethod("coerceIfNeeded", "GenomicRanges",
             object
           })
 
-# setMethod("reorderIfNeeded", "RangedSummarizedExperiment",
-#           function(object, ...) {
-#             gr <- rowRanges(object)
-#             stranded <- any(strand(gr) != "*")
-#             if (stranded) {
-#               ogr <- gr
-#               strand(gr) <- "*"
-#             }
-#             if (!S4Vectors::isSorted(gr)) {
-#               order <- order(gr)
-#               object <- object[order,]
-#             }
-#             return(object)
-# })
+setMethod("reorderIfNeeded", "RangedSummarizedExperiment",
+          function(object, ...) {
+            gr <- rowRanges(object)
+            stranded <- any(strand(gr) != "*")
+            if (stranded) {
+              ogr <- gr
+              strand(gr) <- "*"
+            }
+            if (!S4Vectors::isSorted(gr)) {
+              order <- order(gr)
+              object <- object[order,]
+            }
+            return(object)
+})
 
 #' @describeIn register Register a 'GenomicRanges' object
 #' @import GenomicRanges
@@ -73,21 +73,26 @@ setMethod("register", "GenomicRanges",
 		return(dev)
 })
 
-# setMethod("register", "RangedSummarizedExperiment",
-# 	function(object, columns=NULL, assay=1, metadata=NULL) {
-#           object <- reorderIfNeeded(object)
-# 		      rowRanges(object) <- coerceIfNeeded(rowRanges(object))
-#           
-#           mcolNames <- names(mcols(rowRanges(object)))
-#           if (is.null(metadata) && !is.null(mcolNames)) {
-#             metadata <- mcolNames
-#           }
-#           if (!is.null(metadata) && any(!metadata %in% mcolNames)) {
-#             stop("invalid metadata")
-#           }
-#           EpivizFeatureData$new(object=object, columns=columns, assay=assay, metadata=metadata)
-# })
-# 
+#' @describeIn register Register a 'RangedSummarizedExperiment' object
+#' @import SummarizedExperiment
+setMethod("register", "RangedSummarizedExperiment",
+	function(object, columns = NULL, assay = 1, metadata = NULL) {
+          object <- reorderIfNeeded(object)
+		      rowRanges(object) <- coerceIfNeeded(rowRanges(object))
+
+          mcol_names <- names(mcols(rowRanges(object)))
+          if (is.null(metadata) && !is.null(mcol_names)) {
+            metadata <- mcol_names
+          }
+          if (!is.null(metadata) && any(!metadata %in% mcol_names)) {
+            stop("invalid metadata")
+          }
+          EpivizFeatureData$new(object = object, 
+                                columns = columns, 
+                                assay = assay, 
+                                metadata = metadata)
+})
+
 # setMethod("register", "ExpressionSet",
 # 	function(object, columns, annotation=NULL, assay="exprs") {
 # 		if (is.null(annotation) || missing(annotation)) 

@@ -2,13 +2,14 @@
 % Please edit documentation in R/register-methods.R
 \docType{methods}
 \name{register}
-\alias{coerceIfNeeded,GenomicRanges-method}
 \alias{register}
+\alias{register,GenomicRanges-method}
 \title{Generic method to register data to the data server}
 \usage{
 register(object, columns = NULL, ...)
 
-\S4method{coerceIfNeeded}{GenomicRanges}(object, ...)
+\S4method{register}{GenomicRanges}(object, columns, type = c("block", "bp",
+  "gene_info"), ...)
 }
 \arguments{
 \item{object}{The object to register to data server}

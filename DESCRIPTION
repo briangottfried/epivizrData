@@ -16,7 +16,8 @@ Depends:
     Biobase
 Imports:
     S4Vectors,
-    GenomicRanges
+    GenomicRanges,
+    SummarizedExperiment (>= 0.2.0)
 Suggests:
     testthat,
     roxygen2,
@@ -32,6 +33,7 @@ Collate:
   'EpivizBlockData-class.R'
   'EpivizBpData-class.R'
   'EpivizGeneInfoData-class.R'
+  'EpivizFeatureData-class.R'
   'register-methods.R'
   
   
