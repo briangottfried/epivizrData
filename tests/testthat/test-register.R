@@ -97,3 +97,13 @@ test_that("register works for ExpressionSet", {
   rngs <- apply(exprs(eset)[m,c("SAMP_1","SAMP_2")], 2, function(x) range(pretty(range(x))))
   expect_equal(ms_obj$.ylim, rngs, check.attributes=FALSE)
 })
+
+test_that("register works for OrganismDb object", {
+  library(Mus.musculus)
+  ms_obj <- epivizrData::register(Mus.musculus, keepSeqlevels=paste0("chr",c(1:19,"X","Y")))
+  expect_true(validObject(ms_obj))
+  
+  expect_is(ms_obj, "EpivizGeneInfoData")
+  expect_is(ms_obj$.object, "GNCList")
+  expect_true(is.null(ms_obj$.columns))
+})

@@ -174,46 +174,22 @@ setMethod("register", "ExpressionSet",
 #             cov <- coverage(object)
 #             register(as(cov,"GRanges"), columns="score", type="bp", ...)
 # })
-# setMethod("register", "OrganismDb",
-#           function(object, kind=c("gene","tx"), keepSeqlevels=NULL, ...) {
-#             epivizrMsg("creating gene annotation")
-#             kind <- match.arg(kind)
-#             gr <- genes(object, columns=c("GENEID", "SYMBOL"))
-#             exons <- exonsBy(object, by=kind)
-#             
-#             ids <- as.character(gr$GENEID)
-#             exons <- reduce(ranges(exons)[ids])
-#             gr$Exons <- exons
-#             
-#             if (!is.null(keepSeqlevels)) {
-#               gr <- keepSeqlevels(gr, keepSeqlevels)
-#             }
-#             
-#             nms <- names(mcols(gr))
-#             geneNameIdx <- match("SYMBOL", nms)
-#             nms[geneNameIdx] <- "Gene"
-#             names(mcols(gr)) <- nms
-# 
-#             args <- list(...)
-#             if (!is.null(args$type)) {
-#               register(gr, ...)
-#             } else {
-#               register(gr, type="geneInfo", ...)
-#             }
-# })            
-# setMethod("register", "OrganismDb",
-#           function(object, kind=c("gene","tx"), keepSeqlevels=NULL, ...) {
-#             epivizrMsg("creating gene annotation:")
-#             kind <- match.arg(kind)
-#             gr <- makeGeneTrackAnnotation(object, kind, keepSeqlevels)
-#             args <- list(...)
-#             if (!is.null(args$type)) {
-#               register(gr, ...)
-#             } else {
-#               register(gr, type="geneInfo", ...)
-#             }
-# })
-# 
+            
+setMethod("register", "OrganismDb",
+          function(object, 
+                   kind = c("gene", "tx"), 
+                   keepSeqlevels=NULL, ...) {
+            cat("creating gene annotation (it may take a bit)\n")
+            kind <- match.arg(kind)
+            gr <- .make_gene_info_gr(object, kind, keepSeqlevels)
+            args <- list(...)
+            if (!is.null(args$type)) {
+              register(gr, ...)
+            } else {
+              register(gr, type = "gene_info", ...)
+            }
+})
+
 # setMethod("register", "BEDFile", function(object, ...) {
 #   gr <- import.bed(object)
 #   register(gr, type="block", ...)

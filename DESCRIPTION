@@ -17,11 +17,14 @@ Depends:
 Imports:
     S4Vectors,
     GenomicRanges,
-    SummarizedExperiment (>= 0.2.0)
+    SummarizedExperiment (>= 0.2.0),
+    OrganismDbi
 Suggests:
     testthat,
     roxygen2,
     bumphunter,
+    hgu133plus2.db,
+    Mus.musculus
 License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 5.0.1
@@ -34,6 +37,7 @@ Collate:
   'EpivizBpData-class.R'
   'EpivizGeneInfoData-class.R'
   'EpivizFeatureData-class.R'
+  'make_gene_info_gr.R'
   'register-methods.R'
   
   
