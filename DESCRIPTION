@@ -13,6 +13,10 @@ Depends:
     R (>= 3.2.3),
     methods,
     epivizrServer,
+    Biobase
+Imports:
+    S4Vectors,
+    GenomicRanges
 Suggests:
     testthat,
     roxygen2,
@@ -22,4 +26,9 @@ RoxygenNote: 5.0.1
 Collate:
   'EpivizDataMgr-class.R'
   'createMgr.R'
+  'EpivizData-class.R'
+  'EpivizTrackData-class.R'
+  'EpivizBlockData-class.R'
+  'register-methods.R'
+  
   
