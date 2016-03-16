@@ -23,21 +23,21 @@ EpivizBlockData <- setRefClass("EpivizBlockData",
 
 S4Vectors::setValidity2("EpivizBlockData", .valid.EpivizBlockData)
 
-# EpivizBlockData$methods(
-#   getMeasurements=function() {
-#     out <- list(list(id=id,
-#                 name=name,
-#                 type="range",
-#                 datasourceId=id,
-#                 datasourceGroup=id,
-#                 defaultChartType="Blocks Track",
-#                 annotation=NULL,
-#                 minValue=NA,
-#                 maxValue=NA,
-#                 metadata=NULL))
-#       out
-#   },
-#   parseMeasurement=function(msId) {
+EpivizBlockData$methods(
+  get_measurements = function() {
+    out <- list(list(id = .self$.id,
+                name = .self$.name,
+                type = "range",
+                datasourceId = .self$.id,
+                datasourceGroup = .self$.id,
+                defaultChartType="Blocks Track",
+                annotation=NULL,
+                minValue=NA,
+                maxValue=NA,
+                metadata=NULL))
+      out
+  })#,
+#  parseMeasurement=function(msId) {
 #     if (msId != id)
 #       stop("invalid parsed measurement")
 #     NULL

@@ -118,10 +118,10 @@ EpivizData <- setRefClass("EpivizData",
       .self$.ylim <- ylim
     }, 
     get_measurements = function() {
-      stop("'getMeasurements' called on virtual class object")
+      stop("'get_measurements' called on virtual class object")
     },
-    parse_measurement = function(msId=NULL) {
-      stop("'parseMeasurement' called on virtual class object")
+    parse_measurement = function(ms_id=NULL) {
+      stop("'parse_measurement' called on virtual class object")
     },
     set_mgr = function(mgr) {
       if (!is(mgr, "EpivizDataMgr"))
