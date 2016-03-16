@@ -76,3 +76,24 @@ test_that("register works for RangedSummarizedExperiment", {
   rngs <- apply(emat, 2, function(x) range(pretty(range(x))))
   expect_equal(ms_obj$.ylim, rngs, check.attributes=FALSE)
 })
+
+test_that("register works for ExpressionSet", {
+  eset <- make_test_eset()
+  ms_obj <- epivizrData::register(eset, columns=c("SAMP_1", "SAMP_2"))
+  expect_true(validObject(ms_obj))
+  
+  expect_is(ms_obj, "EpivizFeatureData")
+  expect_is(ms_obj$.object, "RangedSummarizedExperiment")
+  
+  obj <- ms_obj$.object
+  gr <- rowRanges(obj)
+  
+  m <- match(gr$PROBEID, featureNames(eset))
+  mat <- assay(obj)
+  
+  expect_equal(exprs(eset)[m,"SAMP_1"], mat[,"SAMP_1"], check.names=FALSE, check.attributes=FALSE)
+  expect_equal(exprs(eset)[m,"SAMP_2"], mat[,"SAMP_2"], check.names=FALSE, check.attributes=FALSE)
+  
+  rngs <- apply(exprs(eset)[m,c("SAMP_1","SAMP_2")], 2, function(x) range(pretty(range(x))))
+  expect_equal(ms_obj$.ylim, rngs, check.attributes=FALSE)
+})
