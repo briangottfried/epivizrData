@@ -31,3 +31,13 @@ test_that("register works for bp data", {
   rng <- range(pretty(range(gr$score)))
   expect_equal(ms_obj$.ylim, unname(cbind(rng)))
 })
+
+test_that("register works for gene info granges", {
+  gr <- makeGeneInfo()
+  ms_obj <- epivizrData::register(gr, type="gene_info")
+  expect_true(validObject(ms_obj))
+  
+  expect_is(ms_obj, "EpivizGeneInfoData")
+  expect_is(ms_obj$.object, "GNCList")
+  expect_true(is.null(ms_obj$.columns))
+})

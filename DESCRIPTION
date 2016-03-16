@@ -20,6 +20,7 @@ Imports:
 Suggests:
     testthat,
     roxygen2,
+    bumphunter,
 License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 5.0.1
@@ -30,6 +31,7 @@ Collate:
   'EpivizTrackData-class.R'
   'EpivizBlockData-class.R'
   'EpivizBpData-class.R'
+  'EpivizGeneInfoData-class.R'
   'register-methods.R'
   
   
