@@ -1,7 +1,8 @@
 #' Generic method to register data to the data server
 #' 
 #' @param object The object to register to data server
-#' 
+#' @param columns Name of columns containing data to register
+#' @param ... Additonal arguments passed to object constructors
 #' @export
 #' 
 setGeneric("register", signature=c("object"), 
@@ -57,8 +58,9 @@ setMethod("reorderIfNeeded", "RangedSummarizedExperiment",
             return(object)
 })
 
-#' @describeIn register Register a 'GenomicRanges' object
+#' @describeIn register Register a \code{\link{GenomicRanges}} object
 #' @import GenomicRanges
+#' @param type Which type of data object to register for a \code{\link{GenomicRanges}} object
 setMethod("register", "GenomicRanges",
 	function(object, columns, type=c("block","bp","gene_info"), ...) {
 		type <- match.arg(type)
@@ -73,8 +75,10 @@ setMethod("register", "GenomicRanges",
 		return(dev)
 })
 
-#' @describeIn register Register a 'RangedSummarizedExperiment' object
+#' @describeIn register Register a \code{\link{RangedSummarizedExperiment}} object
 #' @import SummarizedExperiment
+#' @param assay Which assay in object to register
+#' @param metadata Additional metadata about features
 setMethod("register", "RangedSummarizedExperiment",
 	function(object, columns = NULL, assay = 1, metadata = NULL) {
           object <- reorderIfNeeded(object)
@@ -93,6 +97,8 @@ setMethod("register", "RangedSummarizedExperiment",
                                 metadata = metadata)
 })
 
+#' @describeIn register Register an \code{\link{ExpressionSet}} object
+#' @param annotation Character string indicating platform annotation (only hgu133plus2 supported for now)
 setMethod("register", "ExpressionSet",
 	function(object, columns, annotation = NULL, assay="exprs") {
 		if (is.null(annotation) || missing(annotation))
@@ -110,7 +116,7 @@ setMethod("register", "ExpressionSet",
 			stop("package '", annoName, "' is required")
 		}
 
-		res <- suppressWarnings(select(get(annoName), keys=probeids, columns=c("SYMBOL", "CHR", "CHRLOC", "CHRLOCEND"), keytype="PROBEID"))
+		res <- suppressWarnings(AnnotationDbi::select(get(annoName), keys=probeids, columns=c("SYMBOL", "CHR", "CHRLOC", "CHRLOCEND"), keytype="PROBEID"))
 		dups <- duplicated(res$PROBEID)
 		res <- res[!dups,]
 
@@ -119,7 +125,7 @@ setMethod("register", "ExpressionSet",
 
 		gr <- GRanges(seqnames = paste0("chr",res$CHR),
 		  strand = ifelse(res$CHRLOC>0, "+","-"),
-			ranges = IRanges(start=abs(res$CHRLOC), end=abs(res$CHRLOCEND)))
+			ranges = IRanges::IRanges(start=abs(res$CHRLOC), end=abs(res$CHRLOCEND)))
 
 		mcols(gr)[,"SYMBOL"] <- res$SYMBOL
 		mcols(gr)[,"PROBEID"] <- res$PROBEID
@@ -174,21 +180,31 @@ setMethod("register", "ExpressionSet",
 #             cov <- coverage(object)
 #             register(as(cov,"GRanges"), columns="score", type="bp", ...)
 # })
-            
-setMethod("register", "OrganismDb",
-          function(object, 
-                   kind = c("gene", "tx"), 
-                   keepSeqlevels=NULL, ...) {
-            cat("creating gene annotation (it may take a bit)\n")
-            kind <- match.arg(kind)
-            gr <- .make_gene_info_gr(object, kind, keepSeqlevels)
-            args <- list(...)
-            if (!is.null(args$type)) {
-              register(gr, ...)
-            } else {
-              register(gr, type = "gene_info", ...)
-            }
-})
+
+.register_txdb <- function(object, 
+                            kind = c("gene", "tx"), 
+                            keepSeqlevels=NULL, ...) 
+{
+  cat("creating gene annotation (it may take a bit)\n")
+  kind <- match.arg(kind)
+  gr <- .make_gene_info_gr(object, kind, keepSeqlevels)
+  args <- list(...)
+  if (!is.null(args$type)) {
+    register(gr, ...)
+  } else {
+    register(gr, type = "gene_info", ...)
+  }
+}
+
+#' @describeIn register Register an \code{\link{OrganismDb}} object
+#' @import OrganismDbi
+#' @param kind Make gene or transcript annotation (only gene supported for now)
+#' @param keepSeqlevels character vector indicating seqlevels in object to keep   
+setMethod("register", "OrganismDb", .register_txdb)
+
+#' @describeIn register Register a \code{\link{TxDb}} object
+#' @import GenomicFeatures
+setMethod("register", "TxDb", .register_txdb)
 
 # setMethod("register", "BEDFile", function(object, ...) {
 #   gr <- import.bed(object)

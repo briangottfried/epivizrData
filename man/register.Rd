@@ -3,22 +3,62 @@
 \docType{methods}
 \name{register}
 \alias{register}
+\alias{register,ExpressionSet-method}
 \alias{register,GenomicRanges-method}
+\alias{register,OrganismDb-method}
+\alias{register,RangedSummarizedExperiment-method}
+\alias{register,TxDb-method}
 \title{Generic method to register data to the data server}
 \usage{
 register(object, columns = NULL, ...)
 
 \S4method{register}{GenomicRanges}(object, columns, type = c("block", "bp",
   "gene_info"), ...)
+
+\S4method{register}{RangedSummarizedExperiment}(object, columns = NULL,
+  assay = 1, metadata = NULL)
+
+\S4method{register}{ExpressionSet}(object, columns, annotation = NULL,
+  assay = "exprs")
+
+\S4method{register}{OrganismDb}(object, kind = c("gene", "tx"),
+  keepSeqlevels = NULL, ...)
+
+\S4method{register}{TxDb}(object, kind = c("gene", "tx"),
+  keepSeqlevels = NULL, ...)
 }
 \arguments{
 \item{object}{The object to register to data server}
+
+\item{columns}{Name of columns containing data to register}
+
+\item{...}{Additonal arguments passed to object constructors}
+
+\item{type}{Which type of data object to register for a \code{\link{GenomicRanges}} object}
+
+\item{assay}{Which assay in object to register}
+
+\item{metadata}{Additional metadata about features}
+
+\item{annotation}{Character string indicating platform annotation (only hgu133plus2 supported for now)}
+
+\item{kind}{Make gene or transcript annotation (only gene supported for now)}
+
+\item{keepSeqlevels}{character vector indicating seqlevels in object to keep}
 }
 \description{
 Generic method to register data to the data server
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{GenomicRanges}: Register a 'GenomicRanges' object
+\item \code{GenomicRanges}: Register a \code{\link{GenomicRanges}} object
+
+\item \code{RangedSummarizedExperiment}: Register a \code{\link{RangedSummarizedExperiment}} object
+
+\item \code{ExpressionSet}: Register an \code{\link{ExpressionSet}} object
+
+\item \code{OrganismDb}: Register an \code{\link{OrganismDb}} object
+
+\item \code{TxDb}: Register a \code{\link{TxDb}} object
 }}
 

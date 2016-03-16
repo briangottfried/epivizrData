@@ -78,6 +78,8 @@ test_that("register works for RangedSummarizedExperiment", {
 })
 
 test_that("register works for ExpressionSet", {
+  skip_if_not_installed("hgu133plus2.db")
+  
   eset <- make_test_eset()
   ms_obj <- epivizrData::register(eset, columns=c("SAMP_1", "SAMP_2"))
   expect_true(validObject(ms_obj))
@@ -99,8 +101,21 @@ test_that("register works for ExpressionSet", {
 })
 
 test_that("register works for OrganismDb object", {
-  library(Mus.musculus)
+  skip_if_not_installed("Mus.musculus")
+  require(Mus.musculus)
   ms_obj <- epivizrData::register(Mus.musculus, keepSeqlevels=paste0("chr",c(1:19,"X","Y")))
+  expect_true(validObject(ms_obj))
+  
+  expect_is(ms_obj, "EpivizGeneInfoData")
+  expect_is(ms_obj$.object, "GNCList")
+  expect_true(is.null(ms_obj$.columns))
+})
+
+test_that("register works for a TxDb object", {
+  skip_if_not_installed("TxDb.Mmusculus.UCSC.mm10.knownGene")
+  require(TxDb.Mmusculus.UCSC.mm10.knownGene)
+  ms_obj <- epivizrData::register(TxDb.Mmusculus.UCSC.mm10.knownGene, 
+                                  keepSeqlevels = paste0("chr", c(1:19, "X", "Y")))
   expect_true(validObject(ms_obj))
   
   expect_is(ms_obj, "EpivizGeneInfoData")
