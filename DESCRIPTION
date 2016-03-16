@@ -21,3 +21,5 @@ LazyData: true
 RoxygenNote: 5.0.1
 Collate:
   'EpivizDataMgr-class.R'
+  'createMgr.R'
+  

@@ -1,8 +1,8 @@
-context("object creation")
+context("manager creation")
 
 test_that("new creates a proper object", {
   server <- epivizrServer::createServer()
-  mgr <- EpivizDataMgr$new(server=server)
+  mgr <- createMgr(server=server)
   expect_is(mgr, "EpivizDataMgr")
   
   expect_is(mgr$.ms_list, "list")
@@ -16,7 +16,7 @@ test_that("new creates a proper object", {
 
 test_that("server opening works as expected", {
   server <- epivizrServer::createServer()
-  mgr <- EpivizDataMgr$new(server=server)
+  mgr <- createMgr(server=server)
   expect_true(mgr$is_server_closed())
   
   server$start_server()
