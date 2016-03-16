@@ -58,27 +58,24 @@ EpivizBpData <- setRefClass("EpivizBpData",
 
 S4Vectors::setValidity2("EpivizBpData", .valid.EpivizBpData)
 
-# EpivizBpData$methods(
-#   getMeasurements=function() {
-#     out <- lapply(columns, function(curCol) {
-#       m <- match(curCol, columns)
-#       list(id=curCol,
-#            name=curCol,
-#            type="feature",
-#            datasourceId=id,
-#            datasourceGroup=id,
-#            defaultChartType="Line Track",
-#            annotation=NULL,
-#            minValue=ylim[1,m],
-#            maxValue=ylim[2,m],
-#            metadata=NULL)
-#     })
-#     
-#     #out <- paste(name, columns, sep="$")
-#     #nms <- paste(id, columns, sep="__")
-#     #names(out) <- nms
-#     out
-#   },
+EpivizBpData$methods(
+  get_measurements=function() {
+    out <- lapply(.self$.columns, function(cur_col) {
+      m <- match(cur_col, .self$.columns)
+      list(id=cur_col,
+           name=cur_col,
+           type="feature",
+           datasourceId=.self$.id,
+           datasourceGroup=.self$.id,
+           defaultChartType="Line Track",
+           annotation=NULL,
+           minValue=.self$.ylim[1,m],
+           maxValue=.self$.ylim[2,m],
+           metadata=NULL)
+    })
+    out
+  }
+)#,
 #   .getMetadata=function(curHits, metadata) {
 #     return(NULL)
 #   },

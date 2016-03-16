@@ -20,46 +20,30 @@ test_that("get_measurements works for blocks", {
   expect_equal(ms, exp_ms)
 })
 
-test_that("addMeasurements works for bp", {
-  skip("for now")
-  sendRequest=sendRequest
+test_that("get_measurements works for bp", {
   gr <- GRanges(seqnames="chr1", ranges=IRanges(start=seq(1,100,by=25), width=1), 
     score1=rnorm(length(seq(1,100,by=25))),score2=rnorm(length(seq(1,100,by=25))))
-  mgr <- .startMGR(openBrowser=sendRequest)
   
-  tryCatch({
-    if (sendRequest) wait_until(mgr$server$socketConnected)
-    msObj <- mgr$addMeasurements(gr, "ms1", sendRequest=sendRequest, type="bp")
-    msId <- msObj$getId()
+  ms_obj <- epivizrData::register(gr, type="bp")
+  ms_id <- ms_obj$get_id()
 
-    rngs <- sapply(1:2, function(i) range(pretty(range(mcols(gr)[,paste0("score",i)], na.rm=TRUE))))
+  rngs <- sapply(1:2, function(i) range(pretty(range(mcols(gr)[,paste0("score",i)], na.rm=TRUE))))
     
-    expMs <- lapply(1:2, function(i) {
+  exp_ms <- lapply(1:2, function(i) {
       list(id=paste0("score",i),
            name=paste0("score",i),
            type="feature",
-           datasourceId=msId,
-           datasourceGroup=msId,
+           datasourceId=ms_id,
+           datasourceGroup=ms_id,
            defaultChartType="Line Track",
            annotation=NULL,
            minValue=rngs[1,i],
            maxValue=rngs[2,i],
            metadata=NULL)
-    })
+  })
 
-    obsMs <- mgr$msList$bp[[msId]]$measurements
-    
-    expect_equal(length(mgr$msList$bp), 1)
-    expect_false(is.null(mgr$msList$bp[[msId]]))
-    expect_equal(mgr$msList$bp[[msId]]$name, "ms1")
-    expect_equal(mgr$msList$bp[[msId]]$measurements, expMs)
-    expect_equal(as(mgr$msList$bp[[msId]]$obj$object, "GRanges"), unname(gr))
-    expect_equal(mgr$msList$bp[[msId]]$obj$columns, paste0("score",1:2))
-
-    if (sendRequest) wait_until(!mgr$server$requestWaiting)
-    connected <- mgr$msList$bp[[msId]]$connected
-    expect_equal(connected, sendRequest)
-  }, finally=mgr$stopServer())
+  obs_ms <- ms_obj$get_measurements()
+  expect_equal(obs_ms, exp_ms)
 })
 
 test_that("addMeasurements works for RangedSummarizedExperiment", {
