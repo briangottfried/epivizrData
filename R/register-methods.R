@@ -32,8 +32,6 @@ setMethod("reorderIfNeeded", "GenomicRanges",
             return(object)
 })
 
-#' @describeIn register Register a 'GenomicRanges' object
-#' @import GenomicRanges
 setMethod("coerceIfNeeded", "GenomicRanges", 
           function(object, ...) {
             if (!is(object, "GNCList")) {
@@ -59,6 +57,8 @@ setMethod("coerceIfNeeded", "GenomicRanges",
 #             return(object)
 # })
 
+#' @describeIn register Register a 'GenomicRanges' object
+#' @import GenomicRanges
 setMethod("register", "GenomicRanges",
 	function(object, columns, type=c("block","bp","geneInfo"), ...) {
 		type <- match.arg(type)
@@ -66,8 +66,8 @@ setMethod("register", "GenomicRanges",
     object <- coerceIfNeeded(object)
     
 		dev <- switch(type,
-					  block=EpivizBlockData$new(object=object, ...))#,
-#					  bp=EpivizBpData$new(object=object, columns=columns, ...),
+					  block=EpivizBlockData$new(object=object, ...),
+					  bp=EpivizBpData$new(object=object, columns=columns, ...))#,
 #            geneInfo=EpivizGeneInfoData$new(object=object, ...))
 		return(dev)
 })
