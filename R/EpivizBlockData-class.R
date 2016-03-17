@@ -36,17 +36,17 @@ EpivizBlockData$methods(
                 maxValue=NA,
                 metadata=NULL))
       out
-  })#,
+  },
 #  parseMeasurement=function(msId) {
 #     if (msId != id)
 #       stop("invalid parsed measurement")
 #     NULL
 #   },
-#   .getMetadata=function(curHits, metadata) {
-#     return(NULL)
-#   },
-#   .getValues=function(curHits, measurement) {
-#     return(NULL)
-#   }
-# )
-# 
+  .get_metadata = function(cur_hits, metadata) {
+    return(NULL)
+  },
+  .get_values_from_hits = function(cur_hits, measurement) {
+    return(NULL)
+  }
+)
+

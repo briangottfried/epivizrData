@@ -33,6 +33,7 @@ test_that("register works for bp data", {
 })
 
 test_that("register works for gene info granges", {
+  skip_if_not_installed("bumphunter")
   gr <- make_test_gene_info()
   ms_obj <- epivizrData::register(gr, type="gene_info")
   expect_true(validObject(ms_obj))

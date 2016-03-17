@@ -12,8 +12,8 @@ EpivizData <- setRefClass("EpivizData",
     .name="character",
     .columns="ANY",
     .ylim="ANY",
-    .curQuery="ANY",
-    .curHits="ANY"
+    .cur_query="ANY",
+    .cur_hits="ANY"
   ),
   methods=list(
     initialize = function(object = GNCList(GRanges()), 
@@ -41,8 +41,8 @@ EpivizData <- setRefClass("EpivizData",
         .self$.ylim <<- .self$.infer_limits()
       }
 
-      .self$.curQuery <- NULL
-      .self$.curHits <- NULL
+      .self$.cur_query <- NULL
+      .self$.cur_hits <- NULL
       callSuper(...)
     },
     .infer_nas = function() {
@@ -156,104 +156,110 @@ S4Vectors::setValidity2("EpivizData", .valid.EpivizData)
 
 #######
 # get data
-# EpivizData$methods(
-#   getHits=function(query) {
-#     if (!is(query, "GRanges"))
-#       stop("'query' must be a GRanges object")
-#     if (length(query) != 1) {
-#       stop("'query' must be of length 1")
-#     }
-# 
-#     if (is.null(curQuery) || !identical(unname(query), unname(curQuery))) {
-#       curQuery <<- query
-#       olaps <- suppressWarnings(GenomicRanges::findOverlaps(query, object, select="all"))
-#       curHits <<- subjectHits(olaps)
-# 
-#       if (length(curHits) == 0) {
-#         return(invisible())
-#       }
-#       
-#       if (!S4Vectors::isSorted(start(object)[curHits])) {
-#         stop("these should be ordered by now...")
-#      }
-#       curHits <<- seq(min(curHits), max(curHits))
-#     }
-#     invisible()
-#   },
-#   getRows=function(query, metadata, useOffset=FALSE) {
-#     if (is.null(query)) {
-#       out <- list(globalStartIndex=NULL, useOffset=FALSE,
-#                   values=list(id=list(),
-#                               start=list(),
-#                               end=list(),
-#                               metadata=.self$.getMetadata(integer(), metadata)))
-#       return(out)
-#     }
-#     
-#     getHits(query)
-#     if (length(curHits) == 0) {
-#       out <- list(globalStartIndex=NULL, useOffset=FALSE,
-#                   values=list(id=list(),
-#                     start=list(),
-#                     end=list(),
-#                     metadata=.self$.getMetadata(curHits, metadata)))
-#     } else {
-#       if (!useOffset) {
-#         out <- list(globalStartIndex=curHits[1],
-#                   useOffset=FALSE,
-#                   values=list(
-#                     id=curHits,
-#                     start=start(object)[curHits],
-#                     end=end(object)[curHits],
-#                     metadata=.self$.getMetadata(curHits, metadata)
-#                    ))
-#       } else {
-#         st <- start(object)[curHits]
-#         stDiff <- diff(st)
-#         end <- end(object)[curHits]
-#         endDiff <- diff(end)
-#         
-#         out <- list(globalStartIndex=curHits[1],
-#                     useOffset=TRUE,
-#                     values=list(
-#                       id=curHits,
-#                       start=c(st[1], stDiff),
-#                       end=c(end[1],endDiff),
-#                       metadata=.self$.getMetadata(curHits, metadata)
-#                      ))
-#         }
-#     }
-#     if (length(out$values)>0 && length(out$values$id) == 1) {
-#       for (slotName in names(out$values)) {
-#         # TODO: switch to simplejson
-#         if (slotName != "metadata")
-#           out$values[[slotName]] <- list(out$values[[slotName]])
-#       }
-#     }
-#     return(out)
-#   },
-#   .getValues=function(curHits, measurement, round) {
-#     numeric()
-#   },
-#   getValues=function(query, measurement, round=TRUE) {
-#     if (is.null(query)) {
-#       out <- list(globalstartIndex=NULL, values=list())
-#       return(out)
-#     }
-#     
-#     getHits(query)
-#     if (length(curHits) == 0) {
-#       out <- list(globalStartIndex=NULL, values=list())
-#     } else {
-#       out <- list(globalStartIndex=curHits[1],
-#                   values=.self$.getValues(curHits, measurement, round=round))
-#       if (length(out$values) ==1) {
-#         out$values <- list(out$values)
-#       }
-#     }
-#     return(out)
-#   }
-# )
-# 
-# 
-# 
+EpivizData$methods(
+  .get_hits = function(query) {
+    if (!is(query, "GRanges"))
+      stop("'query' must be a GRanges object")
+    if (length(query) != 1) {
+      stop("'query' must be of length 1")
+    }
+
+    if (is.null(.self$.cur_query) || 
+        !identical(unname(query), unname(.self$.cur_query))) 
+    {
+      .self$.cur_query <- query
+      olaps <- suppressWarnings(GenomicRanges::findOverlaps(query, .self$.object, select="all"))
+      .self$.cur_hits <- subjectHits(olaps)
+
+      if (length(.self$.cur_hits) == 0) {
+        return(invisible())
+      }
+
+      if (!S4Vectors::isSorted(start(.self$.object)[.self$.cur_hits])) {
+        stop("these should be ordered by now...")
+      }
+      # this is here to make insertion on JS cache work
+      .self$.cur_hits <- seq(min(.self$.cur_hits), max(.self$.cur_hits))
+    }
+    invisible()
+  },
+  get_rows = function(query, metadata, useOffset = FALSE) {
+    if (is.null(query)) {
+      out <- list(globalStartIndex=NULL, useOffset=FALSE,
+                  values=list(id=list(),
+                              start=list(),
+                              end=list(),
+                              metadata=.self$.get_metadata(integer(), metadata)))
+      return(out)
+    }
+
+    .self$.get_hits(query)
+    if (length(.self$.cur_hits) == 0) {
+      out <- list(globalStartIndex=NULL, useOffset=FALSE,
+                  values=list(id=list(),
+                    start=list(),
+                    end=list(),
+                    metadata=.self$.get_metadata(curHits, metadata)))
+    } else {
+      if (!useOffset) {
+        out <- list(globalStartIndex=.self$.cur_hits[1],
+                  useOffset=FALSE,
+                  values=list(
+                    id=.self$.cur_hits,
+                    start=start(.self$.object)[.self$.cur_hits],
+                    end=end(.self$.object)[.self$.cur_hits],
+                    metadata=.self$.get_metadata(.self$.curHits, metadata)
+                   )
+                )
+      } else {
+        st <- start(.self$.object)[.self$.cur_hits]
+        stDiff <- diff(st)
+        end <- end(.self$.object)[.self$.cur_hits]
+        endDiff <- diff(end)
+
+        out <- list(globalStartIndex=.self$.cur_hits[1],
+                    useOffset=TRUE,
+                    values=list(
+                      id=.self$.cur_hits,
+                      start=c(st[1], stDiff),
+                      end=c(end[1], endDiff),
+                      metadata=.self$.get_metadata(.self$.cur_hits, metadata)
+                     )
+                )
+        }
+    }
+    # make sure we are wrapping lists correctly
+    if (length(out$values) > 0 && length(out$values$id) == 1) {
+      for (slotName in names(out$values)) {
+        if (slotName != "metadata")
+          out$values[[slotName]] <- list(out$values[[slotName]])
+      }
+    }
+    return(out)
+  },
+  .get_values_from_hits = function(curHits, measurement, round) {
+    numeric()
+  },
+  get_values=function(query, measurement, round=TRUE) {
+    if (is.null(query)) {
+      out <- list(globalstartIndex=NULL, values=list())
+      return(out)
+    }
+
+    .self$.get_hits(query)
+    if (length(.self$.cur_hits) == 0) {
+      out <- list(globalStartIndex=NULL, values=list())
+    } else {
+      out <- list(globalStartIndex=curHits[1],
+                  values=.self$.get_values_from_hits(.self$.cur_hits, measurement, round=round))
+      # check we are wrapping lists correctly
+      if (length(out$values) == 1) {
+        out$values <- list(out$values)
+      }
+    }
+    return(out)
+  }
+)
+
+
+

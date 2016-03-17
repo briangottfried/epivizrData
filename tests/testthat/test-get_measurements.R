@@ -72,6 +72,8 @@ test_that("get_measurements works for RangedSummarizedExperiment", {
 })
 
 test_that("get_measurements works for ExpressionSet", {
+  skip_if_not_installed("hgu133plus2.db")
+  
   eset <- make_test_eset()
   ms_obj <- epivizrData::register(eset, columns=c("SAMP_1","SAMP_2"))
   ms_id <- ms_obj$get_id()
@@ -97,6 +99,7 @@ test_that("get_measurements works for ExpressionSet", {
 })
 
 test_that("get_measurements works for gene info gr", {
+  skip_if_not_installed("bumphunter")
   gr <- make_test_gene_info()
   ms_obj <- epivizrData::register(gr, type="gene_info")
   ms_id <- ms_obj$get_id()
