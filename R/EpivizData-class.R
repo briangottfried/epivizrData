@@ -1,3 +1,5 @@
+setClassUnion("EpivizDataMgrORNull", c("EpivizDataMgr", "NULL"))
+
 #' Data container for epiviz data server
 #' 
 #' @docType class
@@ -7,7 +9,7 @@ EpivizData <- setRefClass("EpivizData",
   contains="VIRTUAL",
   fields=list(
     .object="ANY",
-    .mgr="EpivizDataMgr",
+    .mgr="EpivizDataMgrORNull",
     .id="character",
     .name="character",
     .columns="ANY",
@@ -43,6 +45,7 @@ EpivizData <- setRefClass("EpivizData",
 
       .self$.cur_query <- NULL
       .self$.cur_hits <- NULL
+      .self$.mgr <- NULL
       callSuper(...)
     },
     .infer_nas = function() {
@@ -60,41 +63,35 @@ EpivizData <- setRefClass("EpivizData",
     .infer_limits = function() {
       NULL
     },
-    .check_class = function() {
-      TRUE
+    .check_class = function(new_object) {
+      stop(".check_class called on VIRTUAL object")
     },
     update = function(new_object, send_request=TRUE) {
       "Update underlying data object with new object"
-      # TODO: use a method to check new object is of valid class
-      #       so subclasses can overload and check appropriately
-      if (!.self$check_class(new_object)) {
+      if (!.self$.check_class(new_object)) {
         stop("class of 'new_object' is not equal to class of current 'object'")
       }
 
       original_object <- .self$.object
-      .self.$.object <- newObject
-
-      if (!is.null(columns)) {
-        if (!.self$.check_columns(columns)) {
+      .self$.object <- new_object
+      
+      if (!is.null(.self$.columns)) {
+        if (!.self$.check_columns(.self$.columns)) {
           .self$.object <- original_object
-          stop("columns not found in 'newObject'")
+          stop("columns not found in 'new_object'")
         }
-
         .self$.ylim <- .self$.infer_limits()
       }
 
-
-      # TODO: make sure object is of the proper type for efficient querying      
-      #if(is(object,"RangedSummarizedExperiment") && !is(rowRanges(object),"GIntervalTree")) {
-       # rowRanges(object) <<- as(rowRanges(object), "GIntervalTree")
-      #}
-
+      .self$.object <- reorderIfNeeded(.self$.object)
+      .self$.object <- coerceIfNeeded(.self$.object)
+      
       na_index <- .self$.infer_nas()
       if (length(na_index) > 0) {
         .self$.object <- .self$.object[-na_index,]
       }
       
-      if (send_request && !is.null(.self$.mgr) && !.self$.mgr$is_closed())
+      if (!is.null(.self$.mgr) && send_request && !.self$.mgr$is_server_closed())
         .self$.mgr$.clear_datasourceGroup_cache(.self, send_request=send_request)
       invisible()
     },

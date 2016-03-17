@@ -9,16 +9,7 @@ EpivizFeatureData <- setRefClass("EpivizFeatureData",
       .self$.metadata <- metadata
       callSuper(object=object, ...)
     },
-    # update=function(newObject, ...) {
-    #   if (!is(newObject, "RangedSummarizedExperiment"))
-    #     stop("'newObject' must be of class 'RangedSummarizedExperiment'")
-    # 
-    #   newObject <- reorderIfNecessary(newObject)
-    #   
-    #   if(!is(rowRanges(newObject), "GNCList"))
-    #     rowRanges(newObject) <- as(rowRanges(newObject), "GNCList")
-    #   callSuper(newObject, ...)
-    # },
+    .check_class = function(object) { is(object, "RangedSummarizedExperiment") },
     .check_columns = function(columns) {
       all(columns %in% rownames(colData(.self$.object)))
     },

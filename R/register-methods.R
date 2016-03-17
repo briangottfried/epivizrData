@@ -51,12 +51,21 @@ setMethod("reorderIfNeeded", "RangedSummarizedExperiment",
               ogr <- gr
               strand(gr) <- "*"
             }
+            
             if (!S4Vectors::isSorted(gr)) {
               order <- order(gr)
               object <- object[order,]
             }
-            return(object)
+            object
 })
+
+setMethod("coerceIfNeeded", "RangedSummarizedExperiment",
+          function(object, ...) {
+            if (!is(rowRanges(object), "GNCList")) {
+              rowRanges(object) <- as(rowRanges(object), "GNCList")
+            }
+            object
+          })
 
 #' @describeIn register Register a \code{\link{GenomicRanges}} object
 #' @import GenomicRanges

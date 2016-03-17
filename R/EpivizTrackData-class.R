@@ -3,18 +3,9 @@ EpivizTrackData <- setRefClass("EpivizTrackData",
   methods=list(
   	initialize = function(object=GNCList(GRanges()), ...) {
 	  	callSuper(object=object, ...)
-	  }#,
-# 	update = function(newObject, ...) {
-# 		if(!is(newObject,"GenomicRanges"))
-# 			stop("'newObject' must be of class 'GenomicRanges'")
-# 
-#     newObject <- reorderIfNeeded(newObject)
-#                 
-# 		if(!is(newObject, "GNCList"))
-# 			newObject <- as(newObject, "GNCList")
-# 		callSuper(newObject, ...)
-# 	})
-)
+	  },
+  	.check_class = function(object) { is(object, "GenomicRanges") }
+  )
 )
 
 .valid.EpivizTrackData.object <- function(x) {
