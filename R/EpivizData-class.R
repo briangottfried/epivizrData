@@ -97,30 +97,40 @@ EpivizData <- setRefClass("EpivizData",
     },
     # TODO: use accessor functions for this
     get_id = function() {
+      "Get id provided by manager \\code{\\link{EpivizDataMgr-class}}"
       .self$.id
     },
     set_id = function(id) {
+      "Set id, used by manager \\code{\\link{EpivizDataMgr-class}}"
       .self$.id <- id
       invisible()
     },
     # TODO: use accessor functions for this
-    get_name = function() { .self$.name },
+    get_name = function() { 
+      "Get datasource name, usually set by manager \\code{\\link{EpivizDataMgr-class}}"
+      .self$.name 
+    },
     set_name=function(name) {
+      "Set datasource name, usually set by manager \\code{\\link{EpivizDataMgr-class}}"
       .self$.name <- name
       invisible()
     },
     set_limits = function(ylim) {
+      "Set plotting limits for continuous data"
       if (!.self$.check_limits(ylim))
           stop("'invalid' limits argument")
       .self$.ylim <- ylim
     }, 
     get_measurements = function() {
+      "Get description of measurements served by this object"
       stop("'get_measurements' called on virtual class object")
     },
     parse_measurement = function(ms_id=NULL) {
+      "Parse a measurement description for data served by this object"
       stop("'parse_measurement' called on virtual class object")
     },
     set_mgr = function(mgr) {
+      "Set data manager, \\code{\\link{EpivizDataMgr-class}}"
       if (!is(mgr, "EpivizDataMgr"))
         stop("'mgr' must be of class 'EpivizDataMgr'")
       
@@ -128,6 +138,7 @@ EpivizData <- setRefClass("EpivizData",
       invisible()
     },
     show = function() {
+      "Print information about this object"
       cat(class(.self), "object", .self$.id, "\n")
       methods::show(.self$.object)
       cat("\n\tcolumns:", paste(.self$.columns, collapse=","),"\n")
@@ -181,6 +192,7 @@ EpivizData$methods(
     invisible()
   },
   get_rows = function(query, metadata, useOffset = FALSE) {
+    "Get genomic interval information overlapping query <\\code{\\link{GenomicRanges}}> region"
     if (is.null(query)) {
       out <- list(globalStartIndex=NULL, useOffset=FALSE,
                   values=list(id=list(),
@@ -238,6 +250,7 @@ EpivizData$methods(
     numeric()
   },
   get_values=function(query, measurement, round=TRUE) {
+    "Get measurement values for features overlapping query region <\\code{\\link{GenomicRanges}}"
     if (is.null(query)) {
       out <- list(globalstartIndex=NULL, values=list())
       return(out)

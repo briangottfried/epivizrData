@@ -1,13 +1,17 @@
+#' Data container for interval data.
+#' 
+#' Used to serve data for visualizations of genomic regions only. Wraps
+#' \code{\link{GenomicRanges}} objects.
+#' 
+#' @docType class
+#' @seealso EpivizData
 EpivizBlockData <- setRefClass("EpivizBlockData",
   contains="EpivizTrackData",
   methods=list(
   	initialize=function(...) {
   		callSuper(...)
   		.self$.columns <- NULL
-  	}#,
-    # plot=function(...) {
-    #   mgr$blockChart(ms=getMeasurements(), ...)
-    # }
+  	}
   )
 )
 

@@ -1,3 +1,11 @@
+#' Container for basepair level numeric data
+#' 
+#' Used to serve data to genomic line tracks. Wraps \code{\link{GenomicRanges}}
+#' objects. Numeric values obtained from \code{mcols} slot.
+#' 
+#' @docType class
+#' @seealso EpivizData
+#' 
 EpivizBpData <- setRefClass("EpivizBpData",
   contains="EpivizTrackData",
   methods=list(

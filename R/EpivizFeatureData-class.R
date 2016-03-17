@@ -1,3 +1,12 @@
+#' Data container for RangedSummarizedExperiment objects
+#' 
+#' Used to serve general data (used in e.g., scatter plots and heatmaps). Wraps
+#' \code{\link{RangedSummarizedExperiment}} objects. Numeric values obtained from
+#' \code{assays} slot
+#' 
+#' @docType class
+#' @seealso EpivizData
+#' 
 EpivizFeatureData <- setRefClass("EpivizFeatureData",
   contains="EpivizData",
   fields=list(.assay="ANY", .metadata="ANY"),
@@ -37,14 +46,7 @@ EpivizFeatureData <- setRefClass("EpivizFeatureData",
       mat <- SummarizedExperiment::assay(.self$.object, i=.self$.assay)
       col_index <- match(.self$.columns, rownames(colData(.self$.object)))
       unname(sapply(col_index, function(i) range(pretty(range(mat[,i], na.rm=TRUE)))))
-    }#,
-    # plot=function(x, y, ...) {
-    #   ms <- getMeasurements()
-    #   if (length(ms)<2)
-    #     stop("need at least two columns to plot")
-    # 
-    #   mgr$scatterChart(x=ms[[1]], y=ms[[2]], ...)
-    # }
+    }
   )
 )
 

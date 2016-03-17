@@ -1,13 +1,19 @@
+#' Container for gene annotation data
+#' 
+#' Used to serve data to gene annotation tracks. Wraps \code{\link{GenomicRanges}} objects.
+#' Annotation obtained from columns \code{Gene} (gene symbols) and \code{Exons} (exon start and end locations).
+#' 
+#' @docType class
+#' @seealso EpivizData
+#' @seealso register,OrganismDb
+#' 
 EpivizGeneInfoData <- setRefClass("EpivizGeneInfoData",
   contains="EpivizTrackData",
   methods=list(
     initialize=function(...) {
       callSuper(...)
       .self$.columns <- NULL
-    }#,
-    # plot=function(...) {
-    #   mgr$genesChart(ms=getMeasurements(), ...)
-    # }
+    }
   )
 )
 
