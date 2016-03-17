@@ -95,28 +95,31 @@ EpivizFeatureData <- setRefClass("EpivizFeatureData",
 
 S4Vectors::setValidity2("EpivizFeatureData", .valid.EpivizFeatureData)
 
-# EpivizFeatureData$methods(
-#     getMeasurements=function() {
-#       out <- lapply(columns, function(curCol) {
-#         m <- match(curCol, columns)
-# 
-#         anno=NULL
-#         if (ncol(colData(object)) > 0) { anno = as.list(as.matrix(data.frame(colData(object)))[curCol, ]) }
-# 
-#         list(id=curCol,
-#            name=curCol,
-#            type="feature",
-#            datasourceId=id,
-#            datasourceGroup=id,
-#            defaultChartType="Scatter Plot",
-#            annotation=anno,
-#            minValue=ylim[1,m],
-#            maxValue=ylim[2,m],
-#            metadata=metadata)
-#     })
-# 
-#       out
-#     },
+EpivizFeatureData$methods(
+    get_measurements=function() {
+      out <- lapply(.self$.columns, function(cur_col) {
+        m <- match(cur_col, .self$.columns)
+
+        anno <- NULL
+        if (ncol(colData(.self$.object)) > 0) { 
+          anno <- as.list(colData(.self$.object)[cur_col,,drop=FALSE])
+        }
+
+        list(id=cur_col,
+           name=cur_col,
+           type="feature",
+           datasourceId=.self$.id,
+           datasourceGroup=.self$.id,
+           defaultChartType="Scatter Plot",
+           annotation=anno,
+           minValue=.self$.ylim[1,m],
+           maxValue=.self$.ylim[2,m],
+           metadata=.self$.metadata)
+    })
+
+      out
+    }
+)#,
 #     parseMeasurement=function(msId) {
 #       column <- strsplit(msId, split="__")[[1]][2]
 #       if(!.checkColumns(column)) {

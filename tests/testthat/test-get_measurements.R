@@ -1,7 +1,7 @@
 context("get_measurements from data objects")
 
 test_that("get_measurements works for blocks", {
-  gr <- GRanges(seqnames="chr1", ranges=IRanges(start=1:10, width=1))
+  gr <- GRanges(seqnames="chr1", ranges=IRanges::IRanges(start=1:10, width=1))
   ms_obj <- epivizrData::register(gr)
   ms_id <- ms_obj$get_id()
   ms <- ms_obj$get_measurements()
@@ -21,7 +21,7 @@ test_that("get_measurements works for blocks", {
 })
 
 test_that("get_measurements works for bp", {
-  gr <- GRanges(seqnames="chr1", ranges=IRanges(start=seq(1,100,by=25), width=1), 
+  gr <- GRanges(seqnames="chr1", ranges=IRanges::IRanges(start=seq(1,100,by=25), width=1), 
     score1=rnorm(length(seq(1,100,by=25))),score2=rnorm(length(seq(1,100,by=25))))
   
   ms_obj <- epivizrData::register(gr, type="bp")
@@ -46,43 +46,29 @@ test_that("get_measurements works for bp", {
   expect_equal(obs_ms, exp_ms)
 })
 
-test_that("addMeasurements works for RangedSummarizedExperiment", {
-  skip("for now")
-  sendRequest=sendRequest
-  sset <- makeSExp()
-  mgr <- .startMGR(openBrowser=sendRequest)
+test_that("get_measurements works for RangedSummarizedExperiment", {
+  sset <- make_test_SE()
+  ms_obj <- epivizrData::register(sset, columns=c("A","B"), assay="counts2")
+  ms_id <- ms_obj$get_id()
 
-  tryCatch({
-    if (sendRequest) wait_until(mgr$server$socketConnected)
-    msObj <- mgr$addMeasurements(sset, "ms1", sendRequest=sendRequest, columns=c("A","B"), assay="counts2")
-    msId <- msObj$getId()
-
-    rngs <- unname(sapply(c("A","B"), function(col) range(pretty(range(assay(sset,"counts2")[,col], na.rm=TRUE)))))
+  rngs <- unname(sapply(c("A","B"), function(col) range(pretty(range(assay(sset,"counts2")[,col], na.rm=TRUE)))))
     
-    expMs <- lapply(c("A","B"), function(col) {
+  exp_ms <- lapply(c("A","B"), function(col) {
       i <- match(col,c("A","B"))
       list(id=col,
            name=col,
            type="feature",
-           datasourceId=msId,
-           datasourceGroup=msId,
+           datasourceId=ms_id,
+           datasourceGroup=ms_id,
            defaultChartType="Scatter Plot",
-           annotation=NULL,
+           annotation=list(Treatment=colData(sset)[i,]),
            minValue=rngs[1,i],
            maxValue=rngs[2,i],
            metadata=c("probeid"))
     })
 
-    expect_equal(length(mgr$msList$gene), 1)
-    expect_false(is.null(mgr$msList$gene[[msId]]))
-    expect_equal(mgr$msList$gene[[msId]]$name, "ms1")
-    expect_equal(mgr$msList$gene[[msId]]$measurements, expMs)
-    expect_equal(mgr$msList$gene[[msId]]$obj$columns, c("A","B"))
-
-    if (sendRequest) wait_until(!mgr$server$requestWaiting)
-    connected <- mgr$msList$gene[[msId]]$connected
-    expect_equal(connected, sendRequest)    
-  }, finally=mgr$stopServer())
+  obs_ms <- ms_obj$get_measurements()
+  expect_equal(obs_ms, exp_ms)
 })
 
 test_that("addMeasurements works for ExpressionSet", {
