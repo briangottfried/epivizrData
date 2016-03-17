@@ -59,37 +59,26 @@ test_that("device data fetch works on bp data", {
 
 test_that("device data fetch works on bp data with NAs", {
   # TODO: fix this test
-  skip("for now")
   gr <- GRanges(seqnames="chr1", 
                 ranges=IRanges::IRanges(start=seq(1,100,by=5), width=1), 
                 score1=seq(1,100,by=5), score2=-seq(1,100,by=5),
                 seqinfo=Seqinfo(seqnames=c("chr1","chr2"),genome="hcb"))
- gr$score2[1:10] <- NA
+  gr$score2[1:10] <- NA
 
- ms_obj <- epivizrData::register(gr3, type="bp")
- query <- GRanges("chr1", IRanges::IRanges(start=2, end=6))
- dataPack <- EpivizBpData$new()$.initPack(2L)
- dataPack$set(msObj1$getData(query=query,
-                             msId="bp1$score1"),
-              msId="bp1$score1",
-              index=1)
- dataPack$set(msObj1$getData(query=query,
-                             msId="bp1$score2"),
-              msId="bp1$score2",
-              index=2)
- res <- dataPack$getData()
-
- out=list()
- lims <- cbind(range(pretty(seq(1,96,len=10))),
-               range(pretty(seq(-96,-51,len=10))))
- out$min=structure(lims[1,], names=paste0("bp1$score", 1:2))
- out$max=structure(lims[2,], names=paste0("bp1$score", 1:2))
- out$data=structure(list(list(bp=6,value=6),list(bp=integer(),value=numeric())), names=paste0("bp1$score", 1:2))
-
-  # cat("res\n"); print(res)
-  # cat("out\n"); print(out)
-
-expect_equal(res,out)
+  ms_obj <- epivizrData::register(gr, type="bp")
+  query <- GRanges("chr1", IRanges::IRanges(start=2, end=6))
+  res <- ms_obj$get_rows(query, NULL)
+  out <- list(globalStartIndex=NULL,
+             useOffset=FALSE,
+             values=list(id=list(),
+                         start=list(),
+                         end=list(),
+                         metadata=NULL))
+  expect_equal(res, out)
+ 
+  res <- ms_obj$get_values(query, c("score1"))
+  out <- list(globalStartIndex=NULL, values=list())
+  expect_equal(res,out)
 })
 
 
