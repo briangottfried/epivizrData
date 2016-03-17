@@ -55,34 +55,31 @@ EpivizGeneInfoData$methods(
                      maxValue=NA,
                      metadata=c("gene", "exon_starts","exon_ends")))
     out
-  })#,
-#   getRows=function(query, metadata) {
-#     out <- callSuper(query, metadata)
-#     if (length(curHits) == 0) {
-#       return(out)
-#     }
-# 
-#     out$values$strand <- as.character(strand(object)[curHits])
-#     out
-#   },
-#   .getMetadata=function(curHits, curMetadata) {
-#     if (length(curHits) == 0) {
-#       out <- lapply(curMetadata, function(x) list())
-#       names(out) <- curMetadata
-#       return(out)
-#     }
-#     out <- vector("list", length(curMetadata))
-#     names(out) <- curMetadata
-#     for (col in curMetadata) {
-#       curOut <- switch(col,
-#                        gene=as.character(object$Gene[curHits]),
-#                        exon_starts=unname(lapply(start(object$Exons)[curHits], paste, collapse=",")),
-#                        exon_ends=unname(lapply(end(object$Exons)[curHits],paste,collapse=",")))
-#       out[[col]] <- curOut
-#     }
-#     out
-#   },
-#   .getValues=function(curHits, measurement) {
-#     return(NULL)
-#   }
-# )  
+  },
+  get_rows=function(query, metadata) {
+    out <- callSuper(query, metadata)
+    if (length(.self$.cur_hits) == 0) {
+      return(out)
+    }
+
+    out$values$strand <- as.character(strand(.self$.object)[.self$.cur_hits])
+    out
+  },
+  .get_metadata=function(cur_hits, cur_metadata) {
+    if (length(cur_hits) == 0) {
+      out <- lapply(cur_metadata, function(x) list())
+      names(out) <- cur_metadata
+      return(out)
+    }
+    out <- vector("list", length(cur_metadata))
+    names(out) <- cur_metadata
+    for (col in cur_metadata) {
+      cur_out <- switch(col,
+                       gene=as.character(.self$.object$Gene[cur_hits]),
+                       exon_starts=unname(lapply(start(.self$.object$Exons)[cur_hits], paste, collapse=",")),
+                       exon_ends=unname(lapply(end(.self$.object$Exons)[cur_hits],paste,collapse=",")))
+      out[[col]] <- cur_out
+    }
+    out
+  }
+)

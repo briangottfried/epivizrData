@@ -130,14 +130,13 @@ test_that("feature data fetch works", {
 })
 
 test_that("geneinfo fetch works", {
-  skip("for now")
-  sendRequest <- sendRequest
-  gr <- makeGeneInfo()
-  msmt <- epivizr::register(gr, type="geneInfo")
-  query <- GRanges("chr11", IRanges(start=102500000, end=103000000))
-  res <- msmt$getRows(query, c("gene", "exon_starts", "exon_ends"))
+  skip_if_not_installed("bumphunter")
+  gr <- make_test_gene_info()
+  msmt <- epivizrData::register(gr, type="gene_info")
+  query <- GRanges("chr11", IRanges::IRanges(start=102500000, end=103000000))
+  res <- msmt$get_rows(query, c("gene", "exon_starts", "exon_ends"))
   
-  msGR <- msmt$object
+  msGR <- msmt$.object
   olaps <- findOverlaps(query, msGR)
   hits <- subjectHits(olaps)
   hits <- seq(min(hits), max(hits))
