@@ -61,7 +61,7 @@ test_that("get_measurements works for RangedSummarizedExperiment", {
            datasourceId=ms_id,
            datasourceGroup=ms_id,
            defaultChartType="Scatter Plot",
-           annotation=list(Treatment=colData(sset)[i,]),
+           annotation=list(Treatment=as.character(colData(sset)[i,])),
            minValue=rngs[1,i],
            maxValue=rngs[2,i],
            metadata=c("probeid"))
@@ -85,7 +85,8 @@ test_that("get_measurements works for ExpressionSet", {
       datasourceId=ms_id,
       datasourceGroup=ms_id,
       defaultChartType="Scatter Plot",
-      annotation=list(a=pData(eset)[i,1], b=pData(eset)[i,2]),
+      annotation=list(a=as.character(pData(eset)[i,1]), 
+                      b=as.character(pData(eset)[i,2])),
       minValue=rngs[1,i],
       maxValue=rngs[2,i],
       metadata=c("PROBEID","SYMBOL"))
@@ -93,5 +94,21 @@ test_that("get_measurements works for ExpressionSet", {
 
   obs_ms <- ms_obj$get_measurements()
   expect_equal(obs_ms, exp_ms)
+})
+
+test_that("get_measurements works for gene info gr", {
+  gr <- make_test_gene_info()
+  ms_obj <- epivizrData::register(gr, type="gene_info")
+  ms_id <- ms_obj$get_id()
+  exp_ms <- list(id=ms_id,
+                 name=ms_obj$.name,
+                 type = "range",
+                 datasourceId = ms_id,
+                 datasourceGroup = ms_id,
+                 defaultChartType = "Genes Track",
+                 annotation = NULL,
+                 minValue = NA,
+                 maxValue = NA,
+                 metadata = c("gene", "exon_starts", "exon_ends"))
 })
 

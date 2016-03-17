@@ -101,8 +101,9 @@ EpivizFeatureData$methods(
         m <- match(cur_col, .self$.columns)
 
         anno <- NULL
-        if (ncol(colData(.self$.object)) > 0) { 
+        if (ncol(colData(.self$.object)) > 0) {
           anno <- as.list(colData(.self$.object)[cur_col,,drop=FALSE])
+          anno <- lapply(anno, as.character)          
         }
 
         list(id=cur_col,
