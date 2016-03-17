@@ -1,5 +1,6 @@
 make_test_eset <- function() {
   require(hgu133plus2.db)
+  set.seed(1)
   nprobeids <- 1000
   nsamples <- 6
   expr <- matrix(rnorm(nprobeids*nsamples), nr = nprobeids)

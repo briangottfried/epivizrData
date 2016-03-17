@@ -5,8 +5,8 @@ test_that("new creates a proper object", {
   mgr <- createMgr(server=server)
   expect_is(mgr, "EpivizDataMgr")
   
-  expect_is(mgr$.ms_list, "list")
-  expect_equal(length(mgr$.ms_list), 0)
+  expect_is(mgr$.ms_list, "environment")
+  expect_equal(mgr$num_datasources(), 0)
   
   expect_equal(mgr$.ms_idCounter, 0)
   
