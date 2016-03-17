@@ -250,7 +250,7 @@ EpivizData$methods(
     if (length(.self$.cur_hits) == 0) {
       out <- list(globalStartIndex=NULL, values=list())
     } else {
-      out <- list(globalStartIndex=curHits[1],
+      out <- list(globalStartIndex=.self$.cur_hits[1],
                   values=.self$.get_values_from_hits(.self$.cur_hits, measurement, round=round))
       # check we are wrapping lists correctly
       if (length(out$values) == 1) {

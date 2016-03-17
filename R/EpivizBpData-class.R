@@ -74,21 +74,21 @@ EpivizBpData$methods(
            metadata=NULL)
     })
     out
-  }
-)#,
-#   .getMetadata=function(curHits, metadata) {
-#     return(NULL)
-#   },
-#   .getValues=function(curHits, measurement, round=FALSE) {
-#     if(!measurement %in% columns) {
-#       stop("could not find measurement", measurement)
-#     }
-#     vals <- unname(mcols(object)[curHits,measurement])
-#     if (round) {
-#       vals <- round(vals, 3)
-#     }
-#     vals
-#   },
+  },
+  .get_metadata = function(cur_hits, metadata) {
+    return(NULL)
+  },
+  .get_values_from_hits = function(cur_hits, measurement, round=FALSE) {
+    if(!measurement %in% .self$.columns) {
+      stop("could not find measurement", measurement)
+    }
+    vals <- unname(mcols(.self$.object)[cur_hits, measurement])
+    if (round) {
+      vals <- round(vals, 3)
+    }
+    vals
+  }#,
+)
 #   parseMeasurement=function(msId) {
 #     column <- strsplit(msId, split="__")[[1]][2]
 #     if(!.checkColumns(column)) {

@@ -4,7 +4,7 @@ test_that("block data fetch works", {
   gr <- GRanges(seqnames="chr1", ranges=IRanges::IRanges(start=1:10, width=1),
                  seqinfo=Seqinfo(seqnames="chr1",genome="hcb"))
   ms_obj <- epivizrData::register(gr)
-  query <- GRanges(seqnames="chr1", ranges=IRanges(start=2, end=6))
+  query <- GRanges(seqnames="chr1", ranges=IRanges::IRanges(start=2, end=6))
   res <- ms_obj$get_rows(query, character())
   out <- list(globalStartIndex=2,
               useOffset=FALSE,
@@ -15,33 +15,32 @@ test_that("block data fetch works", {
   expect_equal(res, out)
 })
 
-test_that("msmt fetch works on unsorted data", {
-  skip("for now")
-  gr1 <- GRanges(seqnames="chr1", ranges=IRanges(start=10:1, width=1),
-                 seqinfo=Seqinfo(seqnames="chr1",genome="hcb"))
-  msObj1 <- epivizr::register(gr1)
+test_that("block fetch works on unsorted data", {
+  gr <- GRanges(seqnames="chr1", ranges=IRanges::IRanges(start=10:1, width=1),
+                seqinfo=Seqinfo(seqnames="chr1",genome="hcb"))
+  ms_obj <- epivizrData::register(gr)
 
-  query <- GRanges(seqnames="chr1", ranges=IRanges(start=2, end=6))
-  res <- msObj1$getRows(query,NULL)
+  query <- GRanges(seqnames="chr1", ranges=IRanges::IRanges(start=2, end=6))
+  res <- ms_obj$get_rows(query, NULL)
   out <- list(globalStartIndex=2,
               useOffset=FALSE,
               values=list(id=2:6,
                 start=2:6,
                 end=2:6,
                 metadata=(NULL)))
-  expect_equal(res,out)
+  expect_equal(res, out)
 })
 
 test_that("device data fetch works on bp data", {
-  skip("for now")
-  gr3 <- GRanges(seqnames="chr1", ranges=IRanges(start=seq(1,100,by=5), width=1), score1=seq(1,100,by=5), score2=-seq(1,100,by=5),
-                 seqinfo=Seqinfo(seqnames=c("chr1","chr2"),genome="hcb"))
+  gr <- GRanges(seqnames="chr1", 
+                ranges=IRanges::IRanges(start=seq(1,100,by=5), width=1), 
+                score1=seq(1,100,by=5), score2=-seq(1,100,by=5),
+                seqinfo=Seqinfo(seqnames=c("chr1","chr2"), genome="hcb"))
   
-  msObj1 <- epivizr::register(gr3, type="bp")
-  expect_is(msObj1, "EpivizBpData")
+  ms_obj <- epivizrData::register(gr, type="bp")
 
-  query <- GRanges(seqnames="chr1", ranges=IRanges(start=2,end=6))
-  res <- msObj1$getRows(query, NULL)
+  query <- GRanges(seqnames="chr1", ranges=IRanges::IRanges(start=2,end=6))
+  res <- ms_obj$get_rows(query, NULL)
   out <- list(globalStartIndex=2,
               useOffset=FALSE,
               values=list(id=list(2),
@@ -51,10 +50,11 @@ test_that("device data fetch works on bp data", {
 
   expect_equal(res, out)
   #print(res);print(out)
-  res <- msObj1$getValues(query, c("score1"))
+
+  res <- ms_obj$get_values(query, c("score1"))
   out <- list(globalStartIndex=2,
               values=list(6))
-  expect_equal(res,out)  
+  expect_equal(res, out)  
 })
 
 test_that("device data fetch works on bp data with NAs", {
