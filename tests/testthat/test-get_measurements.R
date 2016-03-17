@@ -71,43 +71,27 @@ test_that("get_measurements works for RangedSummarizedExperiment", {
   expect_equal(obs_ms, exp_ms)
 })
 
-test_that("addMeasurements works for ExpressionSet", {
-  skip("for now")
-  sendRequest=sendRequest
-  eset <- makeEset()
-  mgr <- .startMGR(openBrowser=sendRequest)
-  
-  tryCatch({
-    if (sendRequest) wait_until(mgr$server$socketConnected)
-    msObj <- mgr$addMeasurements(eset, "ms1", sendRequest=sendRequest, columns=c("SAMP_1","SAMP_2"))
-    msId <- msObj$getId()
+test_that("get_measurements works for ExpressionSet", {
+  eset <- make_test_eset()
+  ms_obj <- epivizrData::register(eset, columns=c("SAMP_1","SAMP_2"))
+  ms_id <- ms_obj$get_id()
 
-    rngs <- sapply(1:2, function(i) range(pretty(range(exprs(eset)[,paste0("SAMP_",i)]))))
+  rngs <- sapply(1:2, function(i) range(pretty(range(exprs(eset)[,paste0("SAMP_",i)]))))
     
-    expMS <- lapply(1:2, function(i) {
-      list(id=paste0("SAMP_",i),
-           name=paste0("SAMP_",i),
-           type="feature",
-           datasourceId=msId,
-           datasourceGroup=msId,
-           defaultChartType="Scatter Plot",
-           annotation=NULL,
-           minValue=rngs[1,i],
-           maxValue=rngs[2,i],
-           metadata=c("PROBEID","SYMBOL"))
-    })
+  exp_ms <- lapply(1:2, function(i) {
+    list(id=paste0("SAMP_",i),
+      name=paste0("SAMP_",i),
+      type="feature",
+      datasourceId=ms_id,
+      datasourceGroup=ms_id,
+      defaultChartType="Scatter Plot",
+      annotation=list(a=pData(eset)[i,1], b=pData(eset)[i,2]),
+      minValue=rngs[1,i],
+      maxValue=rngs[2,i],
+      metadata=c("PROBEID","SYMBOL"))
+  })
 
-    obsMs <- mgr$msList$gene[[msId]]$measurements
-    
-    expect_equal(length(mgr$msList$gene), 1)
-    expect_false(is.null(mgr$msList$gene[[msId]]))
-    expect_equal(mgr$msList$gene[[msId]]$name, "ms1")
-    expect_equal(mgr$msList$gene[[msId]]$measurements, expMS)
-    expect_equal(mgr$msList$gene[[msId]]$obj$columns, paste0("SAMP_",1:2))
-
-    if (sendRequest) wait_until(!mgr$server$requestWaiting)
-    connected <- mgr$msList$gene[[msId]]$connected
-    expect_equal(connected, sendRequest)
-  }, finally=mgr$stopServer())
+  obs_ms <- ms_obj$get_measurements()
+  expect_equal(obs_ms, exp_ms)
 })
 
