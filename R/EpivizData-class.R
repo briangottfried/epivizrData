@@ -199,7 +199,7 @@ EpivizData$methods(
                   values=list(id=list(),
                     start=list(),
                     end=list(),
-                    metadata=.self$.get_metadata(curHits, metadata)))
+                    metadata=.self$.get_metadata(.self$.cur_hits, metadata)))
     } else {
       if (!useOffset) {
         out <- list(globalStartIndex=.self$.cur_hits[1],
@@ -208,7 +208,7 @@ EpivizData$methods(
                     id=.self$.cur_hits,
                     start=start(.self$.object)[.self$.cur_hits],
                     end=end(.self$.object)[.self$.cur_hits],
-                    metadata=.self$.get_metadata(.self$.curHits, metadata)
+                    metadata=.self$.get_metadata(.self$.cur_hits, metadata)
                    )
                 )
       } else {

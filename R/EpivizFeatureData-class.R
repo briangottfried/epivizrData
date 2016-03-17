@@ -116,11 +116,9 @@ EpivizFeatureData$methods(
            minValue=.self$.ylim[1,m],
            maxValue=.self$.ylim[2,m],
            metadata=.self$.metadata)
-    })
-
+      })
       out
-    }
-)#,
+    },
 #     parseMeasurement=function(msId) {
 #       column <- strsplit(msId, split="__")[[1]][2]
 #       if(!.checkColumns(column)) {
@@ -128,30 +126,30 @@ EpivizFeatureData$methods(
 #       }
 #       column
 #     },
-#     .getMetadata=function(curHits, curMetadata) {
-#       if (length(metadata) < 1) {
-#           return(NULL)
-#       }
-# 
-#       if(any(!curMetadata %in% metadata))
-#         stop("error getting metadata")
-# 
-#       if (length(curHits) == 0) {
-#         out <- lapply(curMetadata, function (x) list())
-#         names(out) <- curMetadata
-#         return(out)
-#       }
-#       out <- as.list(mcols(rowRanges(object))[curHits,curMetadata])
-#       names(out) <- curMetadata
-#       out
-#     },
-#   .getValues=function(curHits, measurement, round=FALSE) {
-#     if (!measurement %in% columns) {
-#       stop("could not find measurement", measurement)
-#     }
-#     colNames <- colnames(object)
-#     m <- match(measurement, colNames)
-#     unname(assay(object, .self$assay)[curHits, m])
-#   }
-# )
-# 
+    .get_metadata = function(cur_hits, cur_metadata) {
+      if (length(.self$.metadata) < 1) {
+          return(NULL)
+      }
+
+      if(any(!cur_metadata %in% .self$.metadata))
+        stop("error getting metadata")
+
+      if (length(cur_hits) == 0) {
+        out <- lapply(cur_metadata, function (x) list())
+        names(out) <- cur_metadata
+        return(out)
+      }
+      out <- as.list(mcols(rowRanges(.self$.object))[cur_hits, cur_metadata])
+      names(out) <- cur_metadata
+      out
+    },
+  .get_values_from_hits = function(cur_hits, measurement, round=FALSE) {
+    if (!measurement %in% .self$.columns) {
+      stop("could not find measurement", measurement)
+    }
+    col_names <- colnames(.self$.object)
+    m <- match(measurement, col_names)
+    unname(assay(.self$.object, .self$.assay)[cur_hits, m])
+  }
+)
+

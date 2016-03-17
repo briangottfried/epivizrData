@@ -58,14 +58,16 @@ test_that("device data fetch works on bp data", {
 })
 
 test_that("device data fetch works on bp data with NAs", {
+  # TODO: fix this test
   skip("for now")
- gr3 <- GRanges(seqnames="chr1", ranges=IRanges(start=seq(1,100,by=5), width=1), score1=seq(1,100,by=5), score2=-seq(1,100,by=5),
+  gr <- GRanges(seqnames="chr1", 
+                ranges=IRanges::IRanges(start=seq(1,100,by=5), width=1), 
+                score1=seq(1,100,by=5), score2=-seq(1,100,by=5),
                 seqinfo=Seqinfo(seqnames=c("chr1","chr2"),genome="hcb"))
- gr3$score2[1:10]=NA
+ gr$score2[1:10] <- NA
 
- msObj1 <- epivizr::register(gr3, type="bp")
- expect_is(msObj1, "EpivizBpData")
- query <- GRanges("chr1", IRanges(start=2, end=6))
+ ms_obj <- epivizrData::register(gr3, type="bp")
+ query <- GRanges("chr1", IRanges::IRanges(start=2, end=6))
  dataPack <- EpivizBpData$new()$.initPack(2L)
  dataPack$set(msObj1$getData(query=query,
                              msId="bp1$score1"),
@@ -92,20 +94,21 @@ expect_equal(res,out)
 
 
 test_that("feature data fetch works", {
-  skip("for now")
-  eset <- makeEset()
-  msObj <- epivizr::register(eset, columns=c("SAMP_1", "SAMP_2"))
-  query <- GRanges(seqnames="chr6", ranges=IRanges(start=30000000,end=40000000))
+  skip_if_not_installed("hgu133plus2.db")
+  eset <- make_test_eset()
+  ms_obj <- epivizrData::register(eset, columns=c("SAMP_1", "SAMP_2"))
+  query <- GRanges(seqnames="chr6", 
+                   ranges=IRanges::IRanges(start=30000000,end=40000000))
 
-  olaps <- findOverlaps(query, msObj$object)
+  olaps <- findOverlaps(query, ms_obj$.object)
   hits <- unique(subjectHits(olaps))
-  hits <- seq(min(hits),max(hits))
-  tmp <- msObj$object[hits,]
+  hits <- seq(min(hits), max(hits))
+  tmp <- ms_obj$.object[hits,]
 
   m <- match(rowRanges(tmp)$PROBEID, featureNames(eset))
   mat <- exprs(eset)[m, c("SAMP_1", "SAMP_2")]
 
-  res <- msObj$getRows(query, c("PROBEID","SYMBOL"))
+  res <- ms_obj$get_rows(query, c("PROBEID","SYMBOL"))
   
   out <- list(globalStartIndex=min(hits),
               useOffset=FALSE,
@@ -119,7 +122,7 @@ test_that("feature data fetch works", {
   expect_equal(res, out)
   #print(res); print(out)
   
-  res <- msObj$getValues(query, "SAMP_1")
+  res <- ms_obj$get_values(query, "SAMP_1")
   out <- list(globalStartIndex=min(hits),
               values=unname(mat[,"SAMP_1"]))
   #print(res);print(out)
