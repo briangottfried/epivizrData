@@ -13,14 +13,14 @@ test_that("server connection works", {
   if (!server$is_daemonized()) {
     skip("This test only works for daemonized servers")
   }
-  mgr <- createMgr(server)
-    
+  
   .startRemoteDriver()
   on.exit({cat("stopping remDr\n"); .stopPhantomJS()})
     
   server$start_server()
   on.exit({cat("stopping server\n"); server$stop_server()}, add=TRUE)
-    
+  
+  mgr <- createMgr(server)
   .navigateRemoteDriver(port=server$.port)
   wait_until(mgr$.server$is_socket_connected())
     
