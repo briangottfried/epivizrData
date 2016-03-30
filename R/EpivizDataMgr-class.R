@@ -65,7 +65,7 @@ EpivizDataMgr$methods(
     send_request <- .self$.check_server() && isTRUE(send_request)
     if (send_request) {
       callback <- function(response_data) {
-        .self$.ms_list[[ms_id]][["connected"]] <- TRUE
+        .self$.ms_list[[ms_id]]$connected <- TRUE
         cat("Measurement ", datasource_name, " added to application and connected\n")
       }
       request_data <- list(action="addMeasurements",

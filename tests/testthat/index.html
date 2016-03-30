@@ -12,6 +12,36 @@
 <script>
   
   var ws = new WebSocket("ws://" + window.location.host);
+  var _measurements = {};
+  
+  function _update_msDiv() {
+    var out = new Array();
+    for (ms_id in _measurements) {
+      if (!_measurements.hasOwnProperty(ms_id)) {
+        continue;
+      }
+      var ms = _measurements[ms_id];
+      out.push(ms.datasourceId + ": " + ms.id);
+    }
+    document.getElementById("measurements_output").innerHTML = out.toString();
+  }
+  
+  function _addMeasurements(message_data) {
+    var measurements = JSON.parse(message_data.measurements);
+
+    for (var i = 0; i < measurements.length; i++) {
+      var ms = measurements[i];
+      _measurements[ms.id] = ms;  
+    }
+    
+    _update_msDiv();
+    
+    response_data = {
+      message: "This is a response",
+    }
+    return response_data;
+  }
+  
   ws.onmessage = function(msg) {
     var message = JSON.parse(msg.data);
     console.dir(message);
@@ -19,57 +49,35 @@
     if (type == "response") {
       var success = message.success;
       if (success) {
-        msgDiv = document.createElement("pre");
-        msgDiv.innerHTML = message.data.message
-          .replace(/&/g, "&amp;")
-          .replace(/\\</g, "&lt;");
-        document
-          .getElementById("response_output")
-          .appendChild(msgDiv);
       }
       else { console.log("response returned with success=false");}
     } else if (type == "request") {
       var requestId = message.requestId;
-      msgDiv = document.createElement("pre");
-      msgDiv.innerHTML = message.data.message
-        .replace(/&/g, "&amp;")
-        .replace(/\\</g, "&lt;");
-      document
-        .getElementById("request_output")
-        .appendChild(msgDiv);
+      var message_data = message.data;
+      var action = message_data.action;
+
+      var response_data; 
+      switch(action) {
+        case "addMeasurements":
+          response_data = _addMeasurements(message_data);
+          break;
+      }
+      
       response = {
         type: "response", 
         requestId: requestId, 
         success: true, 
-        data: {message: "this is the response from JS"}
+        data: response_data
       };
       ws.send(JSON.stringify(response));
     }
-  }
-  function sendInput() {
-    var input = document.getElementById('input');
-    ws.send(JSON.stringify({
-      type: 'request', 
-      requestId: 0, 
-      data: {
-        action: 'update', 
-        message: input.value
-      }
-    }));
-    input.value = '';
   }
 </script>
 </head>
 
 <body>
-  <h3>Send Message</h3>
-  <form action="" onsubmit="sendInput(); return false">
-    <input type="text" id="input"/>
-  </form>
-  <h3>Responses</h3>
-  <div id="response_output"></div>
-  <h3>Requests</h3>
-  <div id="request_output"></div>
+  <h3>Measurements</h3>
+  <div id="measurements_output"></div>
 </body>
 </html>
 

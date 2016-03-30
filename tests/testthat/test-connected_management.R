@@ -25,32 +25,17 @@ test_that("add measurement works with connection", {
   wait_until(mgr$.server$is_socket_connected())
   
   se <- make_test_SE()
-  ms_obj <- mgr$add_measurements(se, "example", columns=c("A", "B"), assay="counts2", send_request=FALSE)
+  ms_obj <- mgr$add_measurements(se, "example", columns=c("A", "B"), assay="counts2", send_request=TRUE)
   ms_id <- ms_obj$get_id()
   
-  expect_equal(mgr$num_datasources(), 1)
-  expect_false(is.null(mgr$.ms_list[[ms_id]]))
-
-  rngs <- unname(sapply(c("A","B"), function(col) range(pretty(range(assay(se,"counts2")[,col], na.rm=TRUE)))))
-  exp_ms <- lapply(c("A","B"), function(col) {
-    i <- match(col,c("A","B"))
-    list(id=col,
-         name=col,
-         type="feature",
-         datasourceId=ms_id,
-         datasourceGroup=ms_id,
-         defaultChartType="Scatter Plot",
-         annotation=list(Treatment=as.character(colData(se)[i,])),
-         minValue=rngs[1,i],
-         maxValue=rngs[2,i],
-         metadata=c("probeid"))
-  })
-  
+  wait_until(!mgr$.server$has_request_waiting())
   ms_record <- mgr$.ms_list[[ms_id]]
-  expect_equal(ms_record$measurements, exp_ms)
-  expect_equal(ms_record$name, "example")
-  expect_identical(ms_record$obj, ms_obj)
-  expect_false(ms_record$connected)
+  expect_true(ms_record$connected)
+  
+  outputEl <- remDr$findElement(using="id", "measurements_output")
+  ms_list <- outputEl$getElementText()[[1]]
+  exp_list <- paste0(sprintf("%s: %s", ms_id, c("A","B")), collapse=",")
+  expect_equal(ms_list, exp_list)
 })
 
 test_that("get_measurements works without connection", {
