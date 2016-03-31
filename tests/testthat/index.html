@@ -14,19 +14,19 @@
   var ws = new WebSocket("ws://" + window.location.host);
   var _measurements = {};
   
-  function _update_msDiv() {
+  function _update_msDiv(div_id) {
     var out = new Array();
     for (ms_id in _measurements) {
       if (!_measurements.hasOwnProperty(ms_id)) {
         continue;
       }
       var ms = _measurements[ms_id];
-      out.push(ms.datasourceId + ": " + ms.id);
+      out.push(ms.datasourceId + ":" + ms.id);
     }
-    document.getElementById("measurements_output").innerHTML = out.toString();
+    document.getElementById(div_id).innerHTML = out.toString();
   }
   
-  function _addMeasurements(message_data) {
+  function _addMeasurements(message_data, div_id) {
     var measurements = JSON.parse(message_data.measurements);
 
     for (var i = 0; i < measurements.length; i++) {
@@ -34,7 +34,7 @@
       _measurements[ms.id] = ms;  
     }
     
-    _update_msDiv();
+    _update_msDiv(div_id);
     
     response_data = {
       message: "This is a response",
@@ -42,24 +42,35 @@
     return response_data;
   }
   
+  function _getMeasurements() {
+    request = {
+      type: "request",
+      requestId: 1,
+      data: {action: "getMeasurements"}
+    }
+    ws.send(JSON.stringify(request));
+  }
+  
   ws.onmessage = function(msg) {
     var message = JSON.parse(msg.data);
     console.dir(message);
     var type = message.type;
+    var requestId = message.requestId;
+    var message_data = message.data;
+    
     if (type == "response") {
       var success = message.success;
       if (success) {
+        _addMeasurements(message_data, "get_measurements_output");
       }
       else { console.log("response returned with success=false");}
     } else if (type == "request") {
-      var requestId = message.requestId;
-      var message_data = message.data;
       var action = message_data.action;
 
       var response_data; 
       switch(action) {
         case "addMeasurements":
-          response_data = _addMeasurements(message_data);
+          response_data = _addMeasurements(message_data, "add_measurements_output");
           break;
       }
       
@@ -76,8 +87,11 @@
 </head>
 
 <body>
-  <h3>Measurements</h3>
-  <div id="measurements_output"></div>
+  <h3>Add Measurements</h3>
+  <div id="add_measurements_output"></div>
+  <h3>Get Measurements</h3>
+  <button onclick="_getMeasurements()" id="get_measurements_btn">Get Measurements</button>
+  <div id="get_measurements_output"></div>
 </body>
 </html>
 

@@ -1,4 +1,4 @@
-context("measurement management")
+context("connected measurement management")
 
 test_that("add measurement works with connection", {
   skip_on_cran()
@@ -32,57 +32,70 @@ test_that("add measurement works with connection", {
   ms_record <- mgr$.ms_list[[ms_id]]
   expect_true(ms_record$connected)
   
-  outputEl <- remDr$findElement(using="id", "measurements_output")
+  outputEl <- remDr$findElement(using="id", "add_measurements_output")
   ms_list <- outputEl$getElementText()[[1]]
-  exp_list <- paste0(sprintf("%s: %s", ms_id, c("A","B")), collapse=",")
+  exp_list <- paste0(sprintf("%s:%s", ms_id, c("A","B")), collapse=",")
   expect_equal(ms_list, exp_list)
 })
 
-test_that("get_measurements works without connection", {
-  skip("for now")
+test_that("get_measurements works with connection", {
+  skip_on_cran()
+  skip_on_os("windows")
+  skip_if_not_installed("RSelenium")
   skip_if_not_installed("hgu133plus2.db")
+  
+  if (!.canPhantomTest()) {
+    skip("This test can't be run in this environment")
+  }
+  
+  server <- epivizrServer::createServer(port=7123L, daemonized=TRUE, verbose=TRUE)
+  if (!server$is_daemonized()) {
+    skip("This test only works for daemonized servers")
+  }
+  
+  .startRemoteDriver()
+  on.exit({cat("stopping remDr\n"); .stopPhantomJS()})
+  
+  server$start_server(static_site_path=".")
+  on.exit({cat("stopping server\n"); server$stop_server()}, add=TRUE)
+  
+  mgr <- createMgr(server)
+  .navigateRemoteDriver(port=server$.port)
+  wait_until(mgr$.server$is_socket_connected())
+  
   gr1 <- GRanges(seqnames="chr1", ranges=IRanges::IRanges(start=1:10, width=100))
   gr2 <- GRanges(seqnames="chr2", ranges=IRanges::IRanges(start=2:20, width=100))
   gr3 <- GRanges(seqnames="chr1", ranges=IRanges::IRanges(start=seq(1,100,by=25), width=1), 
                  score=rnorm(length(seq(1,100,by=25))))
   eset <- make_test_eset()
   
-  server <- epivizrServer::createServer()
-  mgr <- createMgr(server)
-  
-  msObj1 <- mgr$add_measurements(gr1, "dev1", send_request=FALSE); msId1=msObj1$get_id()
-  msObj2 <- mgr$add_measurements(gr2, "dev2", send_request=FALSE); msId2=msObj2$get_id()
-  msObj3 <- mgr$add_measurements(gr3, "dev3", send_request=FALSE, type="bp"); msId3=msObj3$get_id()
-  msObj4 <- mgr$add_measurements(eset, "dev4", send_request=FALSE, columns=c("SAMP_1", "SAMP_2")); msId4=msObj4$get_id()
+  msObj1 <- mgr$add_measurements(gr1, "dev1", send_request=TRUE); msId1=msObj1$get_id()
+  msObj2 <- mgr$add_measurements(gr2, "dev2", send_request=TRUE); msId2=msObj2$get_id()
+  msObj3 <- mgr$add_measurements(gr3, "dev3", send_request=TRUE, type="bp"); msId3=msObj3$get_id()
+  msObj4 <- mgr$add_measurements(eset, "dev4", send_request=TRUE, columns=c("SAMP_1", "SAMP_2")); msId4=msObj4$get_id()
     
-  rngs3 <- range(pretty(range(mcols(gr3)[,"score"],na.rm=TRUE)))
-  rngs4 <- sapply(1:2, function(i) range(pretty(range(exprs(eset)[,paste0("SAMP_",i)],na.rm=TRUE))))
-    
-  res <- mgr$get_measurements()
-    
-  expMs <- list(
-      id=c(msId1, msId2, "score", paste0("SAMP_",1:2)),
-      name=c("dev1", "dev2", "score", paste0("SAMP_",1:2)),
-      type=c(rep("range", 2), rep("feature",3)),
-      datasourceId=c(msId1, msId2, msId3, rep(msId4,2)),
-      datasourceGroup=c(msId1, msId2, msId3, rep(msId4,2)),
-      defaultChartType=c(rep("Blocks Track", 2), "Line Track", rep("Scatter Plot",2)),
-      annotation=c(rep(list(NULL),3), 
-                   lapply(1:2, function(i) 
-                     list(a=as.character(pData(eset)[i,1]), 
-                          b=as.character(pData(eset)[i,2])))),
-      minValue=c(rep(NA,2), rngs3[1], rngs4[1,]),
-      maxValue=c(rep(NA,2), rngs3[2], rngs4[2,]),
-      metadata=c(list(NULL), list(NULL), list(NULL), lapply(1:2,function(i) c("PROBEID","SYMBOL")))
-    )
-    
-  for (entry in names(expMs)) {
-    expect_equal(res[[entry]], expMs[[entry]], label=entry)
-  }
-  
+  wait_until(!mgr$.server$has_request_waiting())
   for (id in ls(mgr$.ms_list)) {
-    expect_false(mgr$.ms_list[[id]]$connected)
+    expect_true(mgr$.ms_list[[id]]$connected)
   }
+  
+  mgr$.server$register_action("getMeasurements", function(request_data) {
+    list(measurements=epivizrServer::json_writer(mgr$get_measurements()))
+  })
+  
+  buttonEl <- remDr$findElement(using="id", "get_measurements_btn")
+  buttonEl$clickElement()
+  Sys.sleep(1)
+  
+  outputEl <- remDr$findElement(using="id", "get_measurements_output")
+  ms_list <- outputEl$getElementText()[[1]]
+  cat(ms_list, "\n")
+  
+  ms <- mgr$get_measurements()
+  exp_list <- paste0(sprintf("%s:%s", ms$datasourceId, ms$id), collapse=",")
+  cat(exp_list, "\n")
+  
+  expect_equal(ms_list, exp_list)
 })
 
 test_that("rm_measurements works without connection", {
@@ -127,28 +140,3 @@ test_that("rm_allMeasurements works without connection", {
   expect_equal(mgr$num_datasources(), 0)
 })
 
-test_that("list_measurements works", {
-  skip("for now")
-  skip_if_not_installed("hgu133plus2.db")
-  gr1 <- GRanges(seqnames="chr1", ranges=IRanges(start=1:10, width=100))
-  gr2 <- GRanges(seqnames="chr2", ranges=IRanges(start=2:20, width=100))
-  gr3 <- GRanges(seqnames="chr1", ranges=IRanges(start=seq(1,100,by=25), width=1), 
-                 score=rnorm(length(seq(1,100,by=25))))
-  eset <- make_test_eset()
-  
-  mgr <- createMgr(epivizrServer::createServer())
-  ms1 <- mgr$add_measurements(gr1, "dev1", send_request=FALSE); msId1 <- ms1$get_id()
-  ms2 <- mgr$add_measurements(gr2, "dev2", send_request=FALSE); msId2 <- ms2$get_id()
-  ms3 <- mgr$add_measurements(gr3, "dev3", send_request=FALSE, type="bp"); msId3 <- ms3$get_id()
-  ms4 <- mgr$add_measurements(eset, "dev4", send_request=FALSE, columns=c("SAMP_1", "SAMP_2"))
-  msId4 <- ms4$get_id()
-    
-  ms <- mgr$list_measurements()
-  expected_df <- data.frame(id=c(msId1, msId2, msId3, msId4),
-                            name=paste0("dev", 1:4),
-                            length=c(length(gr1), length(gr2), length(gr3), length(ms4$.object)),
-                            connected=rep("", 4),
-                            columns=c("","","score",paste0("SAMP_",1:2,collapse=",")),
-                            stringsAsFactors=FALSE)
-  expect_equal(ms, expected_df)
-})
