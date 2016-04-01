@@ -75,6 +75,7 @@ EpivizDataMgr$methods(
     ms_object
   },
   get_measurements = function() {
+    "get metadata about all measurements registered"
     out <- list(id=character(),
                 name=character(),
                 type=character(),
@@ -118,6 +119,7 @@ EpivizDataMgr$methods(
     out
   },
   rm_measurements=function(obj_or_id) {
+    "remove registered measurments from a given data object"
     ms_obj <- NULL
     if (is.character(obj_or_id)) {
       # passed the id instead of the object
@@ -155,6 +157,7 @@ EpivizDataMgr$methods(
     invisible()
   },
   rm_allMeasurements = function() {
+    "remove all registered measurements"
     ids <- ls(.self$.ms_list)
     if (length(ids)>0) {
       for (id in ids) {
@@ -163,6 +166,7 @@ EpivizDataMgr$methods(
     }
   },
   list_measurements = function() {
+    "make a printable list of registered measurements"
     if (.self$num_datasources() == 0) {
       return(data.frame())
     }

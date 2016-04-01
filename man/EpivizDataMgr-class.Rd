@@ -13,6 +13,14 @@ Class providing data manager for epiviz app
 \describe{
 \item{\code{add_measurements(obj, datasource_name, send_request = TRUE, ...)}}{register measurements in data manager}
 
+\item{\code{get_measurements()}}{get metadata about all measurements registered}
+
 \item{\code{is_server_closed()}}{Check if underlying server is closed, <logical>}
+
+\item{\code{list_measurements()}}{make a printable list of registered measurements}
+
+\item{\code{rm_allMeasurements()}}{remove all registered measurements}
+
+\item{\code{rm_measurements(obj_or_id)}}{remove registered measurments from a given data object}
 }}
 

@@ -38,37 +38,6 @@ EpivizDeviceMgr$methods(list(
                                description="Gene annotation data",
                                input_class="GRanges"))
 
-EpivizDeviceMgr$methods(list(
-  addMeasurements=function(obj, msName, sendRequest=!nonInteractive, ...) {
-    'add measurements to epiviz session'
-    epivizObject <- epivizr:::register(obj, ...)
-    type <- .self$getMeasurementType(epivizObject)
-    
-    msIdCounter <<- msIdCounter + 1L
-    msId <- sprintf("epivizMs_%s_%d", type, msIdCounter)
-    epivizObject$setId(msId)
-    epivizObject$setName(msName)
-    epivizObject$setMgr(.self)
-    
-    measurements <- epivizObject$getMeasurements()
-    msRecord <- list(measurements=measurements,
-                     name=msName, obj=epivizObject, connected=FALSE)
-    msList[[type]][[msId]] <<- msRecord
-    
-    if (sendRequest) {
-      callback <- function(data) {
-        msList[[type]][[msId]][["connected"]] <<- TRUE
-        epivizrMsg("Measurement ", msName, " added to browser and connected", tagPrompt=TRUE)
-      }
-      requestId <- callbackArray$append(callback)
-      request <- list(requestId=requestId,
-                      type="request")
-      request$data <- list(action="addMeasurements",
-                           measurements=toJSON(measurements))
-      server$sendRequest(request)
-    }
-    return(epivizObject)
-  },
   .clearDatasourceGroupCache=function(msObj, sendRequest=!nonInteractive) {
     if(!is(msObj, "EpivizData")) {
       stop("'msObj' must be an 'EpivizData' object")
@@ -108,65 +77,6 @@ EpivizDeviceMgr$methods(list(
     oldObject$update(newObject, sendRequest=sendRequest)
     invisible()
   },
-  .getMsObject=function(msObjId) {
-    slot <- sapply(msList, function(typeList) exists(msObjId, typeList, inherits=FALSE))
-    if (!any(slot)) {
-      stop("could not find measurement object")
-    }
-    slot <- which(slot)
-    typeList <- msList[[slot]]
-    msRecord <- get(msObjId, envir=typeList, inherits=FALSE)
-    msRecord$obj
-  },
-  rmMeasurements=function(msObj) {
-    if (is.character(msObj)) {
-      # passed the id instead of the object
-      msObj <- .self$.getMsObject(msObj)
-    }
-    
-    if (!is(msObj, "EpivizData")) {
-      stop("'msObj' must be an 'EpivizData' object")
-    }
-    
-    msType <- .self$getMeasurementType(msObj)
-    typeList <- msList[[msType]]
-    
-    if (!exists(msObj$getId(), envir=typeList, inherits=FALSE))
-      stop("object not found")
-    
-    objRecord <- get(msObj$getId(), typeList, inherits=FALSE)
-    msName <- objRecord$name
-    ms <- objRecord$obj$getMeasurements()
-    
-    rm(list=msObj$getId(), envir=msList[[msType]])
-    if(objRecord$connected) {
-      callback=function(data) {
-        epivizrMsg("measurement object ", msName, " removed and disconnected", tagPrompt=TRUE)
-      }
-      requestId=callbackArray$append(callback)
-      request <- list(requestId=requestId,
-                      type="request")
-      request$data <- list(action="removeMeasurements",
-                           measurements=toJSON(ms))
-      server$sendRequest(request)
-    }
-    invisible(NULL)
-  },
-  rmAllMeasurements=function(which=c("noDevice", "onlyDevice", "all")) {
-    which <- match.arg(which)
-    for (i in seq_along(msList)) {
-      curType=names(msList)[i]
-      ids <- ls(msList[[curType]])
-      if (length(ids)>0) {
-        for (id in ids) {
-          objRecord <- msList[[curType]][[id]]
-          if((!objRecord$obj$inDevice && (which %in% c("noDevice", "all")) ||
-              (objRecord$obj$inDevice && (which %in% c("onlyDevice", "all")))))
-            rmMeasurements(objRecord$obj)
-        }
-      }
-    }
-  },
   listMeasurements=function(onlyLocal=TRUE) {
     if (!onlyLocal) {
       stop("'onlyLocal=FALSE' not implemented yet")
@@ -197,66 +107,6 @@ EpivizDeviceMgr$methods(list(
     }
     return(out)
   },
-  getMeasurements=function() {
-    out <- list(id=character(),
-                name=character(),
-                type=character(),
-                datasourceId=character(),
-                datasourceGroup=character(),
-                defaultChartType=character(),
-                annotation=list(),
-                minValue=numeric(),
-                maxValue=numeric(),
-                metadata=list()
-    )
-    for (i in seq_along(typeMap)) {
-      curType <- names(typeMap)[i]
-      nm <- paste0(curType,"Measurements")
-      measurements <- list()
-      
-      ids <- ls(msList[[curType]])
-      if (length(ids)>0) {
-        for (id in ids) {
-          msRecord <- msList[[curType]][[id]]
-          ms <- msRecord$obj$getMeasurements()
-          for (curMs in ms) {
-            for (recName in names(out)) {
-              if (is.list(out[[recName]])) {
-                curVal <- list(curMs[[recName]])
-              } else {
-                curVal <- curMs[[recName]]
-              }
-              if (!is.null(curMs[[recName]])) {
-                out[[recName]] <- c(out[[recName]], curVal)
-              } else {
-                out[[recName]] <- c(out[[recName]], list(NULL))
-              }
-            }
-          }
-        }
-      }
-    }
-    
-    if (length(out$id)==1) {
-      for (recName in names(out)) {
-        out[[recName]] <- list(out[[recName]])
-      }
-    }
-    return(out)
-  },
-  getMeasurementType=function(x) {
-    if (!is.character(x)) {
-      if (!is(x, "EpivizData")) {
-        stop("'x' must be 'character' or an 'EpivizData' object")
-      }
-      x <- class(x)
-    }
-    m <- match(x, sapply(typeMap, "[[", "class"))
-    if (is.na(m))
-      stop("Class ", x, " not found in 'typeMap'")
-    names(typeMap)[m]
-  }
-))
 
 #####
 # fetch data method
