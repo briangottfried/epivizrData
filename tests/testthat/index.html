@@ -37,9 +37,23 @@
     _update_msDiv(div_id);
     
     response_data = {
-      message: "This is a response",
+      message: "This is a response from addMeasurements",
     }
     return response_data;
+  }
+  
+  function _rmMeasurements(message_data, div_id) {
+    var measurements = JSON.parse(message_data.measurements);
+    for (var i = 0; i < measurements.length; i++) {
+      var ms = measurements[i];
+      delete _measurements[ms.id];
+    }
+    
+    _update_msDiv(div_id);
+    
+    response_data = {
+      message: "This is a response from removeMeasurements",
+    }
   }
   
   function _getMeasurements() {
@@ -71,6 +85,9 @@
       switch(action) {
         case "addMeasurements":
           response_data = _addMeasurements(message_data, "add_measurements_output");
+          break;
+        case "removeMeasurements":
+          response_data = _rmMeasurements(message_data, "add_measurements_output");
           break;
       }
       

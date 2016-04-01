@@ -99,26 +99,60 @@ test_that("get_measurements works with connection", {
 })
 
 test_that("rm_measurements works without connection", {
-  skip("for now")
+  skip_on_cran()
+  skip_on_os("windows")
+  skip_if_not_installed("RSelenium")
+  
+  if (!.canPhantomTest()) {
+    skip("This test can't be run in this environment")
+  }
+  
+  server <- epivizrServer::createServer(port=7123L, daemonized=TRUE, verbose=TRUE)
+  if (!server$is_daemonized()) {
+    skip("This test only works for daemonized servers")
+  }
+  
+  .startRemoteDriver()
+  on.exit({cat("stopping remDr\n"); .stopPhantomJS()})
+  
+  server$start_server(static_site_path=".")
+  on.exit({cat("stopping server\n"); server$stop_server()}, add=TRUE)
+  
+  mgr <- createMgr(server)
+  .navigateRemoteDriver(port=server$.port)
+  wait_until(mgr$.server$is_socket_connected())
+  
   gr <- GRanges(seqnames="chr1", ranges=IRanges::IRanges(start=seq(1,100,by=25), width=1),
                 score1=rnorm(length(seq(1,100,by=25))),
                 score2=rnorm(length(seq(1,100,by=25))))
 
-  server <- epivizrServer::createServer()
-  mgr <- createMgr(server)
-  
-  ms_obj <- mgr$add_measurements(gr, "dev1", send_request=FALSE, type="bp")
+  ms_obj <- mgr$add_measurements(gr, "dev1", send_request=TRUE, type="bp")
+  wait_until(!mgr$.server$has_request_waiting())
   id <- ms_obj$get_id()
-  mgr$rm_measurements(id)
+  expect_true(mgr$.ms_list[[id]]$connected)
+
+  outputEl <- remDr$findElement(using="id", "add_measurements_output")
+  ms_list <- outputEl$getElementText()[[1]]
+  expect_equal(ms_list, paste0(sprintf("%s:score%d", id, c(1,2)), collapse=","))
   
-  expect_equal(mgr$num_datasources(), 0)
-  expect_true(is.null(mgr$.ms_list[[id]]))
-    
-  ms_obj <- mgr$add_measurements(gr, "dev1", send_request=FALSE, type="bp")
+  mgr$rm_measurements(id)
+  wait_until(!mgr$.server$has_request_waiting())
+  ms_list <- outputEl$getElementText()[[1]]
+  expect_equal(ms_list, "")
+  
+  ms_obj <- mgr$add_measurements(gr, "dev1", send_request=TRUE, type="bp")
+  wait_until(!mgr$.server$has_request_waiting())
+  id <- ms_obj$get_id()
+  ms_record <- mgr$.ms_list[[id]]
+  expect_true(ms_record$connected)
+  
+  ms_list <- outputEl$getElementText()[[1]]
+  expect_equal(ms_list, paste0(sprintf("%s:score%d", id, c(1,2)), collapse=","))
+  
   mgr$rm_measurements(ms_obj)
-    
-  expect_equal(mgr$num_datasources(), 0)
-  expect_true(is.null(mgr$.ms_list[[ms_obj$get_id()]]))
+  wait_until(!mgr$.server$has_request_waiting())
+  ms_list <- outputEl$getElementText()[[1]]
+  expect_equal(ms_list, "")
 })
 
 test_that("rm_allMeasurements works without connection", {
