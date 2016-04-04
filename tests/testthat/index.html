@@ -54,6 +54,8 @@
     response_data = {
       message: "This is a response from removeMeasurements",
     }
+    
+    return response_data;
   }
   
   function _getMeasurements() {
@@ -63,6 +65,15 @@
       data: {action: "getMeasurements"}
     }
     ws.send(JSON.stringify(request));
+  }
+  
+  function _clearCache(request_data) {
+    var datasource_id = request_data.datasourceGroup;
+    document.getElementById("clear_cache_output").innerHTML = datasource_id + " cache cleared."
+    response_data = {
+      message: "This is a response from clearCache",
+    }
+    return response_data;
   }
   
   ws.onmessage = function(msg) {
@@ -89,6 +100,9 @@
         case "removeMeasurements":
           response_data = _rmMeasurements(message_data, "add_measurements_output");
           break;
+        case "clearDatasourceGroupCache":
+          response_data = _clearCache(message_data);
+          break;
       }
       
       response = {
@@ -109,6 +123,7 @@
   <h3>Get Measurements</h3>
   <button onclick="_getMeasurements()" id="get_measurements_btn">Get Measurements</button>
   <div id="get_measurements_output"></div>
+  <div id="clear_cache_output"></div>
 </body>
 </html>
 

@@ -17,7 +17,7 @@ test_that("server connection works", {
   .startRemoteDriver()
   on.exit({cat("stopping remDr\n"); .stopPhantomJS()})
     
-  server$start_server()
+  server$start_server(static_site_path=".")
   on.exit({cat("stopping server\n"); server$stop_server()}, add=TRUE)
   
   mgr <- createMgr(server)

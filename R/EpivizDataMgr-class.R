@@ -31,9 +31,6 @@ EpivizDataMgr <- setRefClass("EpivizDataMgr",
 #         cat("Measurements:\n")
 #         print(st); cat("\n")
     },
-    .check_server = function() {
-      !is.null(.self$.server) && !.self$.server$is_closed()
-    },
     is_server_closed = function() {
       "Check if underlying server is closed, <logical>"
       is.null(.self$.server) || .self$.server$is_closed()
@@ -41,7 +38,26 @@ EpivizDataMgr <- setRefClass("EpivizDataMgr",
   )
 )
 
+# measurement management methods
 EpivizDataMgr$methods(
+  .clear_datasourceGroup_cache = function(ms_obj) {
+    if(!is(ms_obj, "EpivizData")) {
+      stop("'ms_obj' must be an 'EpivizData' object")
+    }
+    if (!exists(ms_obj$get_id(), envir = .self$.ms_list, inherits = FALSE))
+      stop("did not find object")
+    
+    if (!.self$is_server_closed()) {
+      callback <- function(response_data) {
+        cat(ms_obj$get_id(), " datasourceGroup caches cleared\n")
+        invisible()
+      }
+      
+      request_data <- list(action = "clearDatasourceGroupCache",
+                           datasourceGroup = ms_obj$get_id())
+      .self$.server$send_request(request_data, callback)
+    }
+  },
   add_measurements = function(obj, datasource_name, send_request = TRUE, ...) {
     "register measurements in data manager"
     if (missing(datasource_name) || !is.character(datasource_name)) {
@@ -62,7 +78,7 @@ EpivizDataMgr$methods(
                       connected=FALSE)
     assign(ms_id, ms_record, envir=.self$.ms_list)
     
-    send_request <- .self$.check_server() && isTRUE(send_request)
+    send_request <- !.self$is_server_closed() && isTRUE(send_request)
     if (send_request) {
       callback <- function(response_data) {
         .self$.ms_list[[ms_id]]$connected <- TRUE

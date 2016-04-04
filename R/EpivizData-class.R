@@ -91,8 +91,8 @@ EpivizData <- setRefClass("EpivizData",
         .self$.object <- .self$.object[-na_index,]
       }
       
-      if (!is.null(.self$.mgr) && send_request && !.self$.mgr$is_server_closed())
-        .self$.mgr$.clear_datasourceGroup_cache(.self, send_request=send_request)
+      if (send_request && !is.null(.self$.mgr))
+        .self$.mgr$.clear_datasourceGroup_cache(.self)
       invisible()
     },
     # TODO: use accessor functions for this

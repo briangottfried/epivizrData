@@ -39,28 +39,11 @@ EpivizDeviceMgr$methods(list(
                                input_class="GRanges"))
 
   .clearDatasourceGroupCache=function(msObj, sendRequest=!nonInteractive) {
-    if(!is(msObj, "EpivizData")) {
-      stop("'msObj' must be an 'EpivizData' object")
-    }
-    msType <- getMeasurementType(msObj)
-    if (!exists(msObj$getId(), envir=msList[[msType]], inherits=FALSE))
-      stop("did not find object")
-    
-    if (sendRequest) {
-      callback <- function(data) {
-        if (verbose) epivizrMsg("DatasourceGroup caches cleared", tagPrompt=TRUE)
-      }
       callback2 <- function(data) {
         if (verbose) epivizrMsg("Redrawn", tagPrompt=TRUE)
       }
       
       requestId <- callbackArray$append(callback)
-      request <- list(requestId=requestId,
-                      type="request",
-                      data=list(action="clearDatasourceGroupCache",
-                                datasourceGroup=msObj$getId()))
-      server$sendRequest(request)
-      
       requestId <- callbackArray$append(callback2)
       request <- list(requestId=requestId,
                       type="request",
