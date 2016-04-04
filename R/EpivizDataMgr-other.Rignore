@@ -38,58 +38,6 @@ EpivizDeviceMgr$methods(list(
                                description="Gene annotation data",
                                input_class="GRanges"))
 
-  .clearDatasourceGroupCache=function(msObj, sendRequest=!nonInteractive) {
-      callback2 <- function(data) {
-        if (verbose) epivizrMsg("Redrawn", tagPrompt=TRUE)
-      }
-      
-      requestId <- callbackArray$append(callback)
-      requestId <- callbackArray$append(callback2)
-      request <- list(requestId=requestId,
-                      type="request",
-                      data=list(action="redraw"))
-      server$sendRequest(request)
-    }
-    invisible()
-  },
-  updateMeasurements=function(oldObject, newObject, sendRequest=!nonInteractive) {
-    if (is.character(oldObject))
-      oldObject <- .getMsObject(oldObject)
-    if (!is(oldObject, "EpivizData"))
-      stop("oldObject must be of class 'EpivizData'")
-    oldObject$update(newObject, sendRequest=sendRequest)
-    invisible()
-  },
-  listMeasurements=function(onlyLocal=TRUE) {
-    if (!onlyLocal) {
-      stop("'onlyLocal=FALSE' not implemented yet")
-    }
-    
-    .doOneList <- function(ms) {
-      ids <- ls(ms)
-      nms <- sapply(ids, function(id) ms[[id]]$name)
-      lens <- sapply(ids, function(id) length(ms[[id]]$obj$object))
-      connected <- ifelse(sapply(ids, function(id) ms[[id]]$connected), "*", "")
-      columns <- sapply(ids, function(id) paste0(ms[[id]]$obj$columns,collapse=","))
-      
-      data.frame(id=ids,
-                 name=nms,
-                 length=lens,
-                 connected=connected,
-                 columns=columns,
-                 stringsAsFactors=FALSE,row.names=NULL)
-    }
-    out <- list()
-    for (i in seq_along(msList)) {
-      curType=names(msList)[i]
-      if (length(ls(msList[[curType]])>0)) {
-        out[[curType]] <- .doOneList(msList[[curType]])
-      } else {
-        out[[curType]] <- NULL
-      }
-    }
-    return(out)
-  },
 
 #####
 # fetch data method

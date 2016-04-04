@@ -38,7 +38,7 @@ test_that("update block works with connection", {
 	expect_equal(res, paste(ms_obj$get_id(), "cache cleared."))
 })
 
-test_that("update block works with connection", {
+test_that("update block works with connection through mgr", {
   skip_on_cran()
   skip_on_os("windows")
   skip_if_not_installed("RSelenium")
@@ -68,11 +68,21 @@ test_that("update block works with connection", {
   ms_obj <- mgr$add_measurements(gr1, "dev1", send_request=TRUE)
   wait_until(!mgr$.server$has_request_waiting())
   
-  ms_obj$update(gr2)
+  mgr$update_measurements(ms_obj, gr2)
   wait_until(!mgr$.server$has_request_waiting())
   
   outEl <- remDr$findElement(using="id", "clear_cache_output")
   res <- outEl$getElementText()[[1]]
   expect_equal(res, paste(ms_obj$get_id(), "cache cleared."))
+  
+  ms_obj2 <- mgr$add_measurements(gr1, "dev2", send_request=TRUE)
+  wait_until(!mgr$.server$has_request_waiting())
+
+  mgr$update_measurements(ms_obj2$get_id(), gr2)
+  wait_until(!mgr$.server$has_request_waiting())
+  
+  outEl <- remDr$findElement(using="id", "clear_cache_output")
+  res <- outEl$getElementText()[[1]]
+  expect_equal(res, paste(ms_obj2$get_id(), "cache cleared."))
 })
 

@@ -134,19 +134,23 @@ EpivizDataMgr$methods(
     }
     out
   },
-  rm_measurements=function(obj_or_id) {
-    "remove registered measurments from a given data object"
+  .get_ms_object=function(ms_obj_or_id) {
     ms_obj <- NULL
-    if (is.character(obj_or_id)) {
+    if (is.character(ms_obj_or_id)) {
       # passed the id instead of the object
-      id <- obj_or_id
+      id <- ms_obj_or_id
       if (!exists(id, envir=.self$.ms_list, inherits=FALSE)) {
         stop("measurement with id ", id, " not found")
       }
       ms_obj <- .self$.ms_list[[id]]$obj
     } else {
-      ms_obj <- obj_or_id
+      ms_obj <- ms_obj_or_id
     }
+    ms_obj
+  },
+  rm_measurements=function(ms_obj_or_id) {
+    "remove registered measurments from a given data object"
+    ms_obj <- .get_ms_object(ms_obj_or_id)
     
     if (!is(ms_obj, "EpivizData")) {
       stop("'ms_obj' must be an 'EpivizData' object")
@@ -180,6 +184,15 @@ EpivizDataMgr$methods(
         .self$rm_measurements(id)
       }
     }
+  },
+  update_measurements = function(ms_obj_or_id, new_object, send_request = TRUE) {
+    "update the underlying data object for a registered measurement (given by object or id)"
+    ms_obj <- .self$.get_ms_object(ms_obj_or_id)
+    if (!is(ms_obj, "EpivizData"))
+      stop("ms_obj must be of class 'EpivizData'")
+    ms_obj$update(new_object, send_request=send_request)
+    invisible()
+    
   },
   list_measurements = function() {
     "make a printable list of registered measurements"
