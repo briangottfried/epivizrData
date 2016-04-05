@@ -31,7 +31,7 @@ test_that("block fetch works on unsorted data", {
   expect_equal(res, out)
 })
 
-test_that("device data fetch works on bp data", {
+test_that("data fetch works on bp data", {
   gr <- GRanges(seqnames="chr1", 
                 ranges=IRanges::IRanges(start=seq(1,100,by=5), width=1), 
                 score1=seq(1,100,by=5), score2=-seq(1,100,by=5),
@@ -57,7 +57,7 @@ test_that("device data fetch works on bp data", {
   expect_equal(res, out)  
 })
 
-test_that("device data fetch works on bp data with NAs", {
+test_that("data fetch works on bp data with NAs", {
   # TODO: fix this test
   gr <- GRanges(seqnames="chr1", 
                 ranges=IRanges::IRanges(start=seq(1,100,by=5), width=1), 

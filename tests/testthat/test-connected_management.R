@@ -80,7 +80,7 @@ test_that("get_measurements works with connection", {
   }
   
   mgr$.server$register_action("getMeasurements", function(request_data) {
-    list(measurements=epivizrServer::json_writer(mgr$get_measurements()))
+    list(measurements=epivizrServer::json_writer(mgr$.get_measurements()))
   })
   
   buttonEl <- remDr$findElement(using="id", "get_measurements_btn")
@@ -91,14 +91,14 @@ test_that("get_measurements works with connection", {
   ms_list <- outputEl$getElementText()[[1]]
   cat(ms_list, "\n")
   
-  ms <- mgr$get_measurements()
+  ms <- mgr$.get_measurements()
   exp_list <- paste0(sprintf("%s:%s", ms$datasourceId, ms$id), collapse=",")
   cat(exp_list, "\n")
   
   expect_equal(ms_list, exp_list)
 })
 
-test_that("rm_measurements works without connection", {
+test_that("rm_measurements works with connection", {
   skip_on_cran()
   skip_on_os("windows")
   skip_if_not_installed("RSelenium")
@@ -155,7 +155,7 @@ test_that("rm_measurements works without connection", {
   expect_equal(ms_list, "")
 })
 
-test_that("rm_allMeasurements works without connection", {
+test_that("rm_allMeasurements works with connection", {
   skip_on_cran()
   skip_on_os("windows")
   skip_if_not_installed("RSelenium")

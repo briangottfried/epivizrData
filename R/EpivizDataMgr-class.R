@@ -90,8 +90,7 @@ EpivizDataMgr$methods(
     }
     ms_object
   },
-  get_measurements = function() {
-    "get metadata about all measurements registered"
+  .get_measurements = function() {
     out <- list(id=character(),
                 name=character(),
                 type=character(),
@@ -212,5 +211,33 @@ EpivizDataMgr$methods(
                connected=connected,
                columns=columns,
                stringsAsFactors=FALSE, row.names=NULL)
+  }
+)
+
+# data fetch methods
+EpivizDataMgr$methods(
+  .find_datasource = function(datasource) {
+    if (!exists(datasource, .self$.ms_list, inherits=FALSE)) {
+      stop("cannot find datasource", datasource)
+    }
+    ms_obj <- .self$.ms_list[[datasource]]$obj
+  },
+  get_rows = function(chr, start, end, metadata, datasource) {
+    if (is.null(chr) || is.null(start) || is.null(end)) {
+      query <- NULL
+    } else {
+      query <- GRanges(chr, ranges=IRanges(start, end))
+    }
+    ms_obj <- .self$.find_datasource(datasource)
+    ms_obj$get_rows(query, metadata)
+  },
+  get_values = function(chr, start, end, datasource, measurement) {
+    if (is.null(chr) || is.null(start) || is.null(end)) {
+      query <- NULL
+    } else {
+      query <- GRanges(chr, ranges=IRanges(start, end))
+    }
+    ms_obj <- .self$.find_datasource(datasource)
+    ms_obj$get_values(query, measurement)
   }
 )

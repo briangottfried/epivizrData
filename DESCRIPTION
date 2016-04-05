@@ -27,7 +27,8 @@ Suggests:
     bumphunter,
     hgu133plus2.db,
     Mus.musculus,
-    TxDb.Mmusculus.UCSC.mm10.knownGene
+    TxDb.Mmusculus.UCSC.mm10.knownGene,
+    rjson
 License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 5.0.1
