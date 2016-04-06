@@ -15,4 +15,9 @@ An object of class \code{\link{EpivizDataMgr}}
 \description{
 Create a data manager for epiviz app
 }
+\examples{
+server <- epivizrServer::createServer(port=7123L)
+data_mgr <- epivizrData::createMgr(server)
+
+}
 

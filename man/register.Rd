@@ -64,4 +64,20 @@ Generic method to register data to the data server
 
 \item \code{TxDb}: Register a \code{\link{TxDb}} object
 }}
+\examples{
+library(GenomicRanges)
+# create an example GRanges object
+gr <- GRanges("chr10", IRanges(start=1:1000, width=100), score=rnorm(1000))
+# this returns an EpivizData object without adding to data manager
+# this is not the preferred way of creating these object, but is shown
+# here for completeness.
+ms_obj <- epivizrData:::register(gr, type="bp", columns="score") 
+
+server <- epivizrServer::createServer(port=7123L)
+data_mgr <- epivizrData::createMgr(server)
+
+# This adds a data object to the data manager
+data_mgr$add_measurements(gr, "example_gr", type="bp", columns="score")
+
+}
 
