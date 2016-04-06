@@ -40,7 +40,7 @@ EpivizData <- setRefClass("EpivizData",
           stop("invalid 'ylim' argument")
         .self$.ylim <- ylim
       } else {
-        .self$.ylim <<- .self$.infer_limits()
+        .self$.ylim <- .self$.infer_limits()
       }
 
       .self$.cur_query <- NULL

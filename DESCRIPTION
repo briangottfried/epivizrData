@@ -1,7 +1,7 @@
 Package: epivizrData
 Type: Package
 Title: Data Management API for epiviz interactive visualization app
-Version: 0.0.0.9000
+Version: 0.99.0
 Authors@R: c(
   person("Hector", "Corrada Bravo", email = "hcorrada@gmail.com", role = c("aut", "cre")),
   person("Florin", "Chelaru", email = "florin.chelaru@gmail.com", role = c("aut")))
@@ -9,6 +9,7 @@ URL: http://epiviz.github.io
 Description: Serve data from Bioconductor Objects through a WebSocket
     connection.
 BugReports: https://github.com/epiviz/epivizrData/issues
+biocViews: Infrastructure, Visualization
 Depends:
     R (>= 3.2.3),
     methods,
