@@ -3,6 +3,7 @@
 #' @param object The object to register to data server
 #' @param columns Name of columns containing data to register
 #' @param ... Additonal arguments passed to object constructors
+#' @return Object inheriting from \code{\link{EpivizData}} class
 #' @export
 #' 
 setGeneric("register", signature=c("object"), 
@@ -69,7 +70,7 @@ setMethod("coerceIfNeeded", "RangedSummarizedExperiment",
 
 #' @describeIn register Register a \code{\link{GenomicRanges}} object
 #' @import GenomicRanges
-#' @param type Which type of data object to register for a \code{\link{GenomicRanges}} object
+#' @param type Which type of data object to register for a \code{\link{GenomicRanges}} object. \code{block}: only region data, \code{bp} base-pair resolution quantitative data (see \code{columns} argument), \code{geneInfo} information about gene location.
 setMethod("register", "GenomicRanges",
 	function(object, columns, type=c("block","bp","gene_info"), ...) {
 		type <- match.arg(type)

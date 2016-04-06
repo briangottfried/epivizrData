@@ -29,7 +29,9 @@ Suggests:
     hgu133plus2.db,
     Mus.musculus,
     TxDb.Mmusculus.UCSC.mm10.knownGene,
-    rjson
+    rjson,
+    knitr,
+    rmarkdown
 License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 5.0.1
@@ -45,5 +47,4 @@ Collate:
   'EpivizFeatureData-class.R'
   'make_gene_info_gr.R'
   'register-methods.R'
-  
-  
+VignetteBuilder: knitr

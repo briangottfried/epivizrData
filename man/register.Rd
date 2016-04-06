@@ -34,7 +34,7 @@ register(object, columns = NULL, ...)
 
 \item{...}{Additonal arguments passed to object constructors}
 
-\item{type}{Which type of data object to register for a \code{\link{GenomicRanges}} object}
+\item{type}{Which type of data object to register for a \code{\link{GenomicRanges}} object. \code{block}: only region data, \code{bp} base-pair resolution quantitative data (see \code{columns} argument), \code{geneInfo} information about gene location.}
 
 \item{assay}{Which assay in object to register}
 
@@ -45,6 +45,9 @@ register(object, columns = NULL, ...)
 \item{kind}{Make gene or transcript annotation (only gene supported for now)}
 
 \item{keepSeqlevels}{character vector indicating seqlevels in object to keep}
+}
+\value{
+Object inheriting from \code{\link{EpivizData}} class
 }
 \description{
 Generic method to register data to the data server

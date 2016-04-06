@@ -1,6 +1,8 @@
 #' Create a data manager for epiviz app
 #' 
 #' @param server An object of class \code{\link{EpivizServer}}
+#' @return An object of class \code{\link{EpivizDataMgr}}
+#' @export
 #'
 createMgr <- function(server = server) {
   if (!is(server, "EpivizServer")) {

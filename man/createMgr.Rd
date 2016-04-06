@@ -9,6 +9,9 @@ createMgr(server = server)
 \arguments{
 \item{server}{An object of class \code{\link{EpivizServer}}}
 }
+\value{
+An object of class \code{\link{EpivizDataMgr}}
+}
 \description{
 Create a data manager for epiviz app
 }
