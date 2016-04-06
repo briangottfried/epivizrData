@@ -9,7 +9,10 @@ test_that("server connection works", {
     skip("This test can't be run in this environment")
   }
     
-  server <- epivizrServer::createServer(port=7123L, daemonized=TRUE, verbose=TRUE)
+  server <- epivizrServer::createServer(port=7123L, 
+                                        static_site_path=".",
+                                        daemonized=TRUE, 
+                                        verbose=TRUE)
   if (!server$is_daemonized()) {
     skip("This test only works for daemonized servers")
   }
@@ -17,7 +20,7 @@ test_that("server connection works", {
   .startRemoteDriver()
   on.exit({cat("stopping remDr\n"); .stopPhantomJS()})
     
-  server$start_server(static_site_path=".")
+  server$start_server()
   on.exit({cat("stopping server\n"); server$stop_server()}, add=TRUE)
   
   mgr <- createMgr(server)

@@ -9,7 +9,10 @@ test_that("add measurement works with connection", {
     skip("This test can't be run in this environment")
   }
   
-  server <- epivizrServer::createServer(port=7123L, daemonized=TRUE, verbose=TRUE)
+  server <- epivizrServer::createServer(port=7123L, 
+                                        static_site_path=".",
+                                        daemonized=TRUE, 
+                                        verbose=TRUE)
   if (!server$is_daemonized()) {
     skip("This test only works for daemonized servers")
   }
@@ -17,7 +20,7 @@ test_that("add measurement works with connection", {
   .startRemoteDriver()
   on.exit({cat("stopping remDr\n"); .stopPhantomJS()})
   
-  server$start_server(static_site_path=".")
+  server$start_server()
   on.exit({cat("stopping server\n"); server$stop_server()}, add=TRUE)
   
   mgr <- createMgr(server)
@@ -48,7 +51,10 @@ test_that("get_measurements works with connection", {
     skip("This test can't be run in this environment")
   }
   
-  server <- epivizrServer::createServer(port=7123L, daemonized=TRUE, verbose=TRUE)
+  server <- epivizrServer::createServer(port=7123L, 
+                                        static_site_path=".",
+                                        daemonized=TRUE, 
+                                        verbose=TRUE)
   if (!server$is_daemonized()) {
     skip("This test only works for daemonized servers")
   }
@@ -56,7 +62,7 @@ test_that("get_measurements works with connection", {
   .startRemoteDriver()
   on.exit({cat("stopping remDr\n"); .stopPhantomJS()})
   
-  server$start_server(static_site_path=".")
+  server$start_server()
   on.exit({cat("stopping server\n"); server$stop_server()}, add=TRUE)
   
   mgr <- createMgr(server)
@@ -80,7 +86,7 @@ test_that("get_measurements works with connection", {
   }
   
   mgr$.server$register_action("getMeasurements", function(request_data) {
-    list(measurements=epivizrServer::json_writer(mgr$.get_measurements()))
+    list(measurements=epivizrServer::json_writer(mgr$get_measurements()))
   })
   
   buttonEl <- remDr$findElement(using="id", "get_measurements_btn")
@@ -91,7 +97,7 @@ test_that("get_measurements works with connection", {
   ms_list <- outputEl$getElementText()[[1]]
   cat(ms_list, "\n")
   
-  ms <- mgr$.get_measurements()
+  ms <- mgr$get_measurements()
   exp_list <- paste0(sprintf("%s:%s", ms$datasourceId, ms$id), collapse=",")
   cat(exp_list, "\n")
   
@@ -107,7 +113,10 @@ test_that("rm_measurements works with connection", {
     skip("This test can't be run in this environment")
   }
   
-  server <- epivizrServer::createServer(port=7123L, daemonized=TRUE, verbose=TRUE)
+  server <- epivizrServer::createServer(port=7123L, 
+                                        static_site_path=".",
+                                        daemonized=TRUE, 
+                                        verbose=TRUE)
   if (!server$is_daemonized()) {
     skip("This test only works for daemonized servers")
   }
@@ -115,7 +124,7 @@ test_that("rm_measurements works with connection", {
   .startRemoteDriver()
   on.exit({cat("stopping remDr\n"); .stopPhantomJS()})
   
-  server$start_server(static_site_path=".")
+  server$start_server()
   on.exit({cat("stopping server\n"); server$stop_server()}, add=TRUE)
   
   mgr <- createMgr(server)
@@ -164,7 +173,10 @@ test_that("rm_allMeasurements works with connection", {
     skip("This test can't be run in this environment")
   }
   
-  server <- epivizrServer::createServer(port=7123L, daemonized=TRUE, verbose=TRUE)
+  server <- epivizrServer::createServer(port=7123L, 
+                                        static_site_path=".",
+                                        daemonized=TRUE, 
+                                        verbose=TRUE)
   if (!server$is_daemonized()) {
     skip("This test only works for daemonized servers")
   }
@@ -172,7 +184,7 @@ test_that("rm_allMeasurements works with connection", {
   .startRemoteDriver()
   on.exit({cat("stopping remDr\n"); .stopPhantomJS()})
   
-  server$start_server(static_site_path=".")
+  server$start_server()
   on.exit({cat("stopping server\n"); server$stop_server()}, add=TRUE)
   
   mgr <- createMgr(server)

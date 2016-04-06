@@ -101,6 +101,7 @@ test_that("disconnected mgr fetch works", {
 })
 
 test_that("connected mgr fetch rows works", {
+  skip("for now")
   skip_on_cran()
   skip_on_os("windows")
   skip_if_not_installed("RSelenium")
@@ -111,7 +112,10 @@ test_that("connected mgr fetch rows works", {
     skip("This test can't be run in this environment")
   }
   
-  server <- epivizrServer::createServer(port=7123L, daemonized=TRUE, verbose=TRUE)
+  server <- epivizrServer::createServer(port=7123L, 
+                                        static_site_path=".",
+                                        daemonized=TRUE, 
+                                        verbose=TRUE)
   if (!server$is_daemonized()) {
     skip("This test only works for daemonized servers")
   }
@@ -119,7 +123,7 @@ test_that("connected mgr fetch rows works", {
   .startRemoteDriver()
   on.exit({cat("stopping remDr\n"); .stopPhantomJS()})
   
-  server$start_server(static_site_path=".")
+  server$start_server()
   on.exit({cat("stopping server\n"); server$stop_server()}, add=TRUE)
   
   mgr <- createMgr(server)
@@ -182,7 +186,10 @@ test_that("connected mgr fetch values works", {
     skip("This test can't be run in this environment")
   }
   
-  server <- epivizrServer::createServer(port=7123L, daemonized=TRUE, verbose=TRUE)
+  server <- epivizrServer::createServer(port=7123L, 
+                                        static_site_path=".",
+                                        daemonized=TRUE, 
+                                        verbose=TRUE)
   if (!server$is_daemonized()) {
     skip("This test only works for daemonized servers")
   }
@@ -190,7 +197,7 @@ test_that("connected mgr fetch values works", {
   .startRemoteDriver()
   on.exit({cat("stopping remDr\n"); .stopPhantomJS()})
   
-  server$start_server(static_site_path=".")
+  server$start_server()
   on.exit({cat("stopping server\n"); server$stop_server()}, add=TRUE)
   
   mgr <- createMgr(server)

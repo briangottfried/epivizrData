@@ -102,6 +102,7 @@ test_that("register works for ExpressionSet", {
 })
 
 test_that("register works for OrganismDb object", {
+  skip_on_cran()
   skip_if_not_installed("Mus.musculus")
   require(Mus.musculus)
   ms_obj <- epivizrData::register(Mus.musculus, keepSeqlevels=paste0("chr",c(1:19,"X","Y")))
@@ -113,6 +114,7 @@ test_that("register works for OrganismDb object", {
 })
 
 test_that("register works for a TxDb object", {
+  skip_on_cran()
   skip_if_not_installed("TxDb.Mmusculus.UCSC.mm10.knownGene")
   require(TxDb.Mmusculus.UCSC.mm10.knownGene)
   ms_obj <- epivizrData::register(TxDb.Mmusculus.UCSC.mm10.knownGene, 

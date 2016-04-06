@@ -90,7 +90,7 @@ EpivizDataMgr$methods(
     }
     ms_object
   },
-  .get_measurements = function() {
+  get_measurements = function() {
     out <- list(id=character(),
                 name=character(),
                 type=character(),
