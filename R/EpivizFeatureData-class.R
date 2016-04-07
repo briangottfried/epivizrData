@@ -99,7 +99,7 @@ EpivizFeatureData$methods(
           anno <- lapply(anno, as.character)          
         }
 
-        list(id=cur_col,
+        EpivizMeasurement(id=cur_col,
            name=cur_col,
            type="feature",
            datasourceId=.self$.id,

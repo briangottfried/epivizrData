@@ -84,24 +84,14 @@ EpivizDataMgr$methods(
         cat("Measurement ", datasource_name, " added to application and connected\n")
       }
       request_data <- list(action="addMeasurements",
-                           measurements=epivizrServer::json_writer(measurements))
+                           measurements=epivizrServer::json_writer(lapply(measurements, as.list)))
       .self$.server$send_request(request_data, callback)
     }
     ms_object
   },
   get_measurements = function() {
-    out <- list(id=character(),
-                name=character(),
-                type=character(),
-                datasourceId=character(),
-                datasourceGroup=character(),
-                defaultChartType=character(),
-                annotation=list(),
-                minValue=numeric(),
-                maxValue=numeric(),
-                metadata=list()
-    )
-      
+    out <- .emptyEpivizMeasurement()
+
     measurements <- list()
     ids <- ls(.self$.ms_list)
     if (length(ids)>0) {
@@ -109,28 +99,12 @@ EpivizDataMgr$methods(
         ms_record <- .self$.ms_list[[id]]
         ms <- ms_record$obj$get_measurements()
         for (cur_ms in ms) {
-          for (entry in names(out)) {
-            if (is.list(out[[entry]])) {
-              cur_val <- list(cur_ms[[entry]])
-            } else {
-              cur_val <- cur_ms[[entry]]
-            }
-            if (!is.null(cur_ms[[entry]])) {
-              out[[entry]] <- c(out[[entry]], cur_val)
-            } else {
-              out[[entry]] <- c(out[[entry]], list(NULL))
-            }
-          }
+          out <- .appendEpivizMeasurement(out, cur_ms)
         }
       }
     }
-    
-    if (length(out$id)==1) {
-      for (entry in names(out)) {
-        out[[entry]] <- list(out[[entry]])
-      }
-    }
-    out
+
+    as.list(out)
   },
   .get_ms_object=function(ms_obj_or_id) {
     ms_obj <- NULL
@@ -169,7 +143,7 @@ EpivizDataMgr$methods(
         cat("measurement object ", ms_name, " removed and disconnected\n")
       }
       request_data <- list(action="removeMeasurements",
-                           measurements=epivizrServer::json_writer(ms))
+                           measurements=epivizrServer::json_writer(lapply(ms, as.list)))
       .self$.server$send_request(request_data, callback)
     }
     invisible()

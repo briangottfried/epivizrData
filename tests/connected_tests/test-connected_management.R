@@ -1,7 +1,6 @@
 context("connected measurement management")
 
 test_that("add measurement works with connection", {
-  skip_on_cran()
   skip_on_os("windows")
   skip_if_not_installed("RSelenium")
   
@@ -42,7 +41,6 @@ test_that("add measurement works with connection", {
 })
 
 test_that("get_measurements works with connection", {
-  skip_on_cran()
   skip_on_os("windows")
   skip_if_not_installed("RSelenium")
   skip_if_not_installed("hgu133plus2.db")
@@ -105,7 +103,6 @@ test_that("get_measurements works with connection", {
 })
 
 test_that("rm_measurements works with connection", {
-  skip_on_cran()
   skip_on_os("windows")
   skip_if_not_installed("RSelenium")
   
@@ -165,7 +162,6 @@ test_that("rm_measurements works with connection", {
 })
 
 test_that("rm_allMeasurements works with connection", {
-  skip_on_cran()
   skip_on_os("windows")
   skip_if_not_installed("RSelenium")
   

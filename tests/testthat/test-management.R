@@ -27,7 +27,7 @@ test_that("add measurement works without connection", {
   })
   
   ms_record <- mgr$.ms_list[[ms_id]]
-  expect_equal(ms_record$measurements, exp_ms)
+  expect_equal(lapply(ms_record$measurements, as.list), exp_ms)
   expect_equal(ms_record$name, "example")
   expect_identical(ms_record$obj, ms_obj)
   expect_false(ms_record$connected)
