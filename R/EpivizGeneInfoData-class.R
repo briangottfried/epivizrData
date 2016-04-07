@@ -50,16 +50,14 @@ S4Vectors::setValidity2("EpivizGeneInfoData", .valid.EpivizGeneInfoData)
 
 EpivizGeneInfoData$methods(
   get_measurements=function() {
-    out <- list(list(id=id,
-                     name=name,
-                     type="range",
-                     datasourceId=id,
-                     datasourceGroup=id,
-                     defaultChartType="Genes Track",
-                     annotation=NULL,
-                     minValue=NA,
-                     maxValue=NA,
-                     metadata=c("gene", "exon_starts","exon_ends")))
+    out <- list(EpivizMeasurement(
+      id = .self$.id,
+      name = .self$.name,
+      type = "range",
+      datasourceId = .self$.id,
+      datasourceGroup = .self$.id,
+      defaultChartType = "Genes Track",
+      metadata=c("gene", "exon_starts","exon_ends")))
     out
   },
   get_rows=function(query, metadata) {

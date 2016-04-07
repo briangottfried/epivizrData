@@ -1,4 +1,4 @@
-setClassUnion("EpivizDataMgrORNull", c("EpivizDataMgr", "NULL"))
+setClassUnion("EpivizDataMgrOrNULL", c("EpivizDataMgr", "NULL"))
 
 #' Data container for epiviz data server
 #' 
@@ -9,7 +9,7 @@ EpivizData <- setRefClass("EpivizData",
   contains="VIRTUAL",
   fields=list(
     .object="ANY",
-    .mgr="EpivizDataMgrORNull",
+    .mgr="EpivizDataMgrOrNULL",
     .id="character",
     .name="character",
     .columns="ANY",

@@ -37,6 +37,7 @@ LazyData: true
 RoxygenNote: 5.0.1
 Collate:
   'epivizrData-package.R'
+  'EpivizMeasurement-class.R'
   'EpivizDataMgr-class.R'
   'createMgr.R'
   'EpivizData-class.R'

@@ -29,17 +29,17 @@ S4Vectors::setValidity2("EpivizBlockData", .valid.EpivizBlockData)
 
 EpivizBlockData$methods(
   get_measurements = function() {
-    out <- list(list(id = .self$.id,
-                name = .self$.name,
-                type = "range",
-                datasourceId = .self$.id,
-                datasourceGroup = .self$.id,
-                defaultChartType="Blocks Track",
-                annotation=NULL,
-                minValue=NA,
-                maxValue=NA,
-                metadata=NULL))
-      out
+    out <- list(
+      EpivizMeasurement(
+        id = .self$.id,
+        name = .self$.name,
+        type = "range",
+        datasourceId = .self$.id,
+        datasourceGroup = .self$.id,
+        defaultChartType="Blocks Track"
+      )
+    )
+    out
   },
 #  parseMeasurement=function(msId) {
 #     if (msId != id)

@@ -1,5 +1,3 @@
-setClassUnion("EpivizServerOrNULL", c("EpivizServer", "NULL"))
-
 #' Class providing data manager for epiviz app
 #'
 #' @docType class
@@ -11,10 +9,10 @@ EpivizDataMgr <- setRefClass("EpivizDataMgr",
   fields = list(
     .ms_list = "environment",
     .ms_idCounter = "integer",
-    .server = "EpivizServerOrNULL"
+    .server = "EpivizServer"
   ),
   methods=list(
-    initialize=function(server=NULL, ...) {
+    initialize=function(server=epivizrServer::createServer(), ...) {
       .self$.server <- server
       .self$.ms_list <- new.env(parent=emptyenv())
       .self$.ms_idCounter <- 0L

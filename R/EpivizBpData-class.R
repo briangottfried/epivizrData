@@ -70,16 +70,15 @@ EpivizBpData$methods(
   get_measurements=function() {
     out <- lapply(.self$.columns, function(cur_col) {
       m <- match(cur_col, .self$.columns)
-      list(id=cur_col,
-           name=cur_col,
-           type="feature",
-           datasourceId=.self$.id,
-           datasourceGroup=.self$.id,
-           defaultChartType="Line Track",
-           annotation=NULL,
-           minValue=.self$.ylim[1,m],
-           maxValue=.self$.ylim[2,m],
-           metadata=NULL)
+      EpivizMeasurement(
+        id=cur_col,
+        name=cur_col,
+        type="feature",
+        datasourceId=.self$.id,
+        datasourceGroup=.self$.id,
+        defaultChartType="Line Track",
+        minValue=.self$.ylim[1,m],
+        maxValue=.self$.ylim[2,m])
     })
     out
   },
