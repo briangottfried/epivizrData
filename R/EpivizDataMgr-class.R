@@ -26,10 +26,11 @@ EpivizDataMgr <- setRefClass("EpivizDataMgr",
       cat("Server: ")
       .self$.server$show(); cat("\n")
  
-#       st <- .self$list_measurements()
-#       if (length(st)>0) {
-#         cat("Measurements:\n")
-#         print(st); cat("\n")
+      st <- .self$list_measurements()
+      if (length(st)>0) {
+        cat("Measurements:\n")
+        print(st); cat("\n")
+      }
     },
     is_server_closed = function() {
       "Check if underlying server is closed, <logical>"
