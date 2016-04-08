@@ -67,6 +67,7 @@ EpivizBpData <- setRefClass("EpivizBpData",
 S4Vectors::setValidity2("EpivizBpData", .valid.EpivizBpData)
 
 EpivizBpData$methods(
+  get_default_chart_type = function() { "LineTrack" },
   get_measurements=function() {
     out <- lapply(.self$.columns, function(cur_col) {
       m <- match(cur_col, .self$.columns)
@@ -76,7 +77,7 @@ EpivizBpData$methods(
         type="feature",
         datasourceId=.self$.id,
         datasourceGroup=.self$.id,
-        defaultChartType="Line Track",
+        defaultChartType=.self$get_default_chart_type(),
         minValue=.self$.ylim[1,m],
         maxValue=.self$.ylim[2,m])
     })

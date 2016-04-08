@@ -28,6 +28,7 @@ EpivizBlockData <- setRefClass("EpivizBlockData",
 S4Vectors::setValidity2("EpivizBlockData", .valid.EpivizBlockData)
 
 EpivizBlockData$methods(
+  get_default_chart_type = function() { "BlocksTrack" },
   get_measurements = function() {
     out <- list(
       EpivizMeasurement(
@@ -36,7 +37,7 @@ EpivizBlockData$methods(
         type = "range",
         datasourceId = .self$.id,
         datasourceGroup = .self$.id,
-        defaultChartType="Blocks Track"
+        defaultChartType=.self$get_default_chart_type()
       )
     )
     out

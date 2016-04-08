@@ -49,6 +49,7 @@ EpivizGeneInfoData <- setRefClass("EpivizGeneInfoData",
 S4Vectors::setValidity2("EpivizGeneInfoData", .valid.EpivizGeneInfoData)
 
 EpivizGeneInfoData$methods(
+  get_default_chart_type = function() { "GenesTrack" },
   get_measurements=function() {
     out <- list(EpivizMeasurement(
       id = .self$.id,
@@ -56,7 +57,7 @@ EpivizGeneInfoData$methods(
       type = "range",
       datasourceId = .self$.id,
       datasourceGroup = .self$.id,
-      defaultChartType = "Genes Track",
+      defaultChartType = .self$get_default_chart_type(),
       metadata=c("gene", "exon_starts","exon_ends")))
     out
   },

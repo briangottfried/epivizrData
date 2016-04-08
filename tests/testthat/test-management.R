@@ -19,7 +19,7 @@ test_that("add measurement works without connection", {
          type="feature",
          datasourceId=ms_id,
          datasourceGroup=ms_id,
-         defaultChartType="Scatter Plot",
+         defaultChartType="ScatterPlot",
          annotation=list(Treatment=as.character(colData(se)[i,])),
          minValue=rngs[1,i],
          maxValue=rngs[2,i],
@@ -60,7 +60,7 @@ test_that("get_measurements works without connection", {
       type=c(rep("range", 2), rep("feature",3)),
       datasourceId=c(msId1, msId2, msId3, rep(msId4,2)),
       datasourceGroup=c(msId1, msId2, msId3, rep(msId4,2)),
-      defaultChartType=c(rep("Blocks Track", 2), "Line Track", rep("Scatter Plot",2)),
+      defaultChartType=c(rep("BlocksTrack", 2), "LineTrack", rep("ScatterPlot",2)),
       annotation=c(rep(list(NULL),3), 
                    lapply(1:2, function(i) 
                      list(a=as.character(pData(eset)[i,1]), 
