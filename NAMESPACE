@@ -2,6 +2,9 @@
 
 export(createMgr)
 export(register)
+exportClasses(EpivizData)
+exportClasses(EpivizDataMgr)
+exportClasses(EpivizMeasurement)
 import(Biobase)
 import(GenomeInfoDb)
 import(GenomicFeatures)

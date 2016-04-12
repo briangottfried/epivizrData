@@ -1,10 +1,9 @@
 #' Class providing data manager for epiviz app
 #'
-#' @docType class
 #' @import methods
 #' @importClassesFrom epivizrServer EpivizServer
-#' 
-#' 
+#'
+#' @export 
 EpivizDataMgr <- setRefClass("EpivizDataMgr",
   fields = list(
     .ms_list = "environment",

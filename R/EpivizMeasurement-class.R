@@ -1,3 +1,6 @@
+#' Class encapsulating a measurement description for epiviz app.
+#' 
+#' @export
 EpivizMeasurement <- setClass("EpivizMeasurement",
   slots = c(
     id = "character",

@@ -2,9 +2,9 @@ setClassUnion("EpivizDataMgrOrNULL", c("EpivizDataMgr", "NULL"))
 
 #' Data container for epiviz data server
 #' 
-#' @docType class
 #' @import methods
 #' @import S4Vectors
+#' @export
 EpivizData <- setRefClass("EpivizData",
   contains="VIRTUAL",
   fields=list(
