@@ -54,7 +54,7 @@ EpivizBlockData$methods(
   .get_values_from_hits = function(cur_hits, measurement) {
     return(NULL)
   },
-  tag_HTML = function() {
+  get_default_chart_type_html = function() {
     "epiviz-json-blocks-track"
   }
 )

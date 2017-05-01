@@ -87,5 +87,8 @@ EpivizGeneInfoData$methods(
       out[[col]] <- cur_out
     }
     out
+  },
+  tag_HTML = function() {
+    stop("Not supported")
   }
 )
