@@ -88,7 +88,7 @@ EpivizGeneInfoData$methods(
     }
     out
   },
-  tag_HTML = function() {
-    stop("Not supported")
+  get_default_chart_type_html = function() {
+    stop("Genes Track is currently not supported for polymer.")
   }
 )
