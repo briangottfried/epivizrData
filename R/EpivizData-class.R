@@ -301,7 +301,7 @@ EpivizData$methods(
     col_data <- .self$.get_col_data(query)
 
     result <- list(rows=row_data, cols=col_data)
-    data_json <- epivizrServer::json_writer(result)
+    data_json <- epivizrChart::json_writer(result)
 
     measurements <- .self$get_measurements()
     for (i in 1:length(measurements)) {
@@ -309,7 +309,7 @@ EpivizData$methods(
     }
 
     ms_list <- lapply(measurements, as.list)
-    ms_json <- epivizrServer::json_writer(ms_list)
+    ms_json <- epivizrChart::json_writer(ms_list)
 
     return(list(measurements=ms_json, data=data_json))
   },
@@ -324,17 +324,6 @@ EpivizData$methods(
     }
 
     return(cols)
-  },
-  export = function(host, unix.socket, user, pass, table, values) {
-    
-    
-    driver <- dbDriver("MySQL")
-    connection <-  dbConnect(driver, host, unix.socket, user, pass)
-    
-    # the null in here is an annotation column (JSON format). for example {"tissue": "colon", "subtype": "tumor"}
-   # dbSendQuery("INSERT INTO TABLE `epiviz_dev.bp_data_index` VALUES ('brain_h3k27ac', 'brain_h3k27ac', 'brain_h3k27ac', 'brain_h3k27ac', 0, 3, 0, NULL)")
-    
-    
   }
 )
 
