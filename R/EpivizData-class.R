@@ -212,7 +212,7 @@ EpivizData$methods(
   get_rows = function(query, metadata, useOffset = FALSE) {
     "Get genomic interval information overlapping query <\\code{\\link{GenomicRanges}}> region"
     if (is.null(query)) {
-      out <- list(globalStartIndex=NULL, useOffset=FALSE,
+      out <- list(globalStartIndex=1, useOffset=FALSE,
                   values=list(id=as.vector(seqnames(.self$.object)),
                               start=start(.self$.object),
                               end=end(.self$.object),
@@ -270,9 +270,8 @@ EpivizData$methods(
   get_values=function(query, measurement, round=TRUE) {
     "Get measurement values for features overlapping query region <\\code{\\link{GenomicRanges}}"
     if (is.null(query)) {
-      out <- list(globalstartIndex=NULL, 
-        values=list(
-          unname(mcols(.self$.object)[, measurement])))
+      out <- list(globalstartIndex=1,
+        values=list(.self$.get_values_from_hits(1:length(.self$.object), measurement, round = round)))
       return(out)
     }
 
@@ -289,14 +288,14 @@ EpivizData$methods(
     }
     return(out)
   },
-  toJSON = function(chr=NULL, start=1, end=.Machine$integer.max, ...) {
+  toJSON = function(chr=NULL, start=1, end=.Machine$integer.max) {
     "Convert data to JSON"
     if (is.null(chr)) {
       query <- NULL
     } else {
       query <- GRanges(seqnames=chr, ranges=IRanges(start=start,end=end))
     }
-    
+
     row_data <- .self$get_rows(query = query, metadata=c())
     col_data <- .self$.get_col_data(query)
 
