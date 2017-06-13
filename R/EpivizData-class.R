@@ -288,8 +288,17 @@ EpivizData$methods(
     }
     return(out)
   },
-  toJSON = function(chr=NULL, start=1, end=.Machine$integer.max) {
+  toJSON = function(chr=NULL, start, end) {
     "Convert data to JSON"
+
+    if (is.null(start)){
+      start <- 1
+    }
+
+    if (is.null(end)){
+      end <- .Machine$integer.max
+    }
+
     if (is.null(chr)) {
       query <- NULL
     } else {
@@ -323,6 +332,9 @@ EpivizData$methods(
     }
 
     return(cols)
+  },
+  export = function(host, unix.socket, user, pass, db_name) {
+   # TODO
   }
 )
 
